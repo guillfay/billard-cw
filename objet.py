@@ -29,9 +29,9 @@ class Board():
 
     def set_corners(self):
         corner1 = [0,0]
-        corner2 = [self.width,0]
+        corner2 = [0, self.length]
         corner3 = [self.width,self.length]
-        corner4 = [0, self.length]
+        corner4 = [self.width,0]
         return [corner1,corner2,corner3,corner4]
 
     def set_middle(self):
