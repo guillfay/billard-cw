@@ -43,10 +43,10 @@ pip install -r requirements.txt
     - Fonctionnalité 5 : modélisation du choc entre les boules
     - Fonctionnalité 6 : modélisation des frottements avec le tapis
 - **Sprint 4 : Paramétrer la simulation depuis une ligne de commande**
-    -Fonctionnalité 7 : utilisation du module argparse
-    -Fonctionnalité 8 : écriture d’un programme principal
-    -Fonctionnalité 9 : lancement d’un coup
+    - Fonctionnalité 7 : utilisation du module argparse
+    - Fonctionnalité 8 : écriture d’un programme principal
+    - Fonctionnalité 9 : lancement d’un coup
 - **Sprint  5 : Utilisation d’une GUI**
-    -Fonctionnalité 10 : prise en compte de la rotation de la boule
-    -Fonctionnalité 11 : configuration d’un coup via l’interface graphique
+    - Fonctionnalité 10 : prise en compte de la rotation de la boule
+    - Fonctionnalité 11 : configuration d’un coup via l’interface graphique
 
