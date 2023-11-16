@@ -66,5 +66,5 @@ def rebond(board, ball, dt):
     elif check == 44:
         speedafter = np.array([-vx, -vy])
         posafter = np.array([-(x + vx*dt) + 2*board.corner[3][0], -(y + vy*dt) + 2*board.corner[3][1]])
-        
-#attention au double rebond
+    return (posafter, speedafter)
+
