@@ -74,5 +74,20 @@ class Pool:
         return chaine
 
 
+class Cue:
+    def __init__(self, mass):
+        self.mass = mass
+
+    def frappe(self, energie, angle, ball):
+        """Energie en J, angle en rad par rapport à l'axe x"""
+        v_cue = np.sqrt(2 * energie / self.mass)
+        v_ball = self.mass / ball.mass * v_cue
+        ball.update_speed([np.cos(angle) * v_ball, np.sin(angle) * v_ball])
+
+
 # billard = Pool(5)
 # print(billard)
+# C = Cue(0.5)
+# print(billard.balls["0"])
+# C.frappe(1, 0, billard.balls["0"])
+# print(billard.balls["0"])
