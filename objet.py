@@ -64,7 +64,7 @@ class Pool:
         self.board = Board()
         self.balls = {}
         for i in range(number_of_balls):
-            self.balls[str(i)] = Ball(i,self.board.middle)
+            self.balls[str(i)] = Ball(i, self.board.middle)
         self.number_of_balls = number_of_balls
 
     def __str__(self):
