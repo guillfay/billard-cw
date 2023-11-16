@@ -19,7 +19,7 @@ class Ball:
     def update_speed(self, vector_vitesse):
         self.speed = vector_vitesse
 
-    def properties(self):
+    def __str__(self):
         return "La boule numéro " + str(self.number) + " se trouve à la position " + str(
             self.position) + " et a un vecteur vitesse de " + str(self.speed) + "."
 
@@ -44,22 +44,22 @@ class Board:
     def set_middle(self):
         return np.array([self.width / 2, self.length / 2])
 
-    def properties(self):
+    def __str__(self):
         return "La table a une largeur " + str(self.width) + " et de longueur " + str(
             self.length) + " a ses coins aux position " + str(
             self.corners) + " et son milieu se trouve aux coordonnées" + str(self.middle) + "."
 
-    def create_pool(n):
+    def create_pool(self,n):
         pool = {}
-        pool["Board"] = Board()
+        pool["Board"] = self
         for i in range(n):
-            pool["Ball"+str(i)] = Ball()
+            pool["Ball"+str(i)] = Ball(i,self.middle)
         return pool
 
 
-B1 = Ball(1, np.array([0, 0]))
-print(B1.properties())
-
-T = Board()
-B1.update_position(np.array([1, 1]))
-print(T.properties())
+#B1 = Ball(1, np.array([0, 0]))
+#print(B1)
+#T = Board()
+#B1.update_position(np.array([1, 1]))
+#print(T)
+#print(T.create_pool(5))
