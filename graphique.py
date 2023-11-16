@@ -35,6 +35,7 @@ def trace(billard):
 
     def update(frame):
         """Fonction générant une image de l'animation"""
+        # Il faut encore appeler la fonction de mise à jour de position, qui n'est pas encore créée.
         for i in range(number_of_balls):
             position = balls[str(i)].position
             radius = balls[str(i)].radius
