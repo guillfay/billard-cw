@@ -22,18 +22,27 @@ def trace(billard):
     ax = fig.add_subplot()
     ax.set_aspect('equal')
     ax.set_xlim(-0.1*length,1.1*length)
-    ax.set_ylim(-0.1*width,1.1*width)
-    line, = ax.plot([], [], linestyle="-", color="black")
+    ax.set_ylim(-0.1*length,width+0.1*length)
+    
     def init():
         """Fonction initialisant l'affichage"""
+        line1, = ax.plot([corners[0][0], corners[1][0]], [corners[0][1], corners[1][1]], linestyle="-", color="black")
+        line2, = ax.plot([corners[1][0], corners[2][0]], [corners[1][1], corners[2][1]], linestyle="-", color="black")
+        line3, = ax.plot([corners[2][0], corners[3][0]], [corners[2][1], corners[3][1]], linestyle="-", color="black")
+        line4, = ax.plot([corners[3][0], corners[0][0]], [corners[3][1], corners[0][1]], linestyle="-", color="black")
+        lines = [line1, line2, line3, line4]
+        return lines
 
-    def update():
+    def update(frame):
         """Fonction générant une image de l'animation"""
-        for i in range(4):
-            line.set_data([corners[i][0], corners[(i+1)%4][0]],[corners[i][1], corners[(i+1)%4][1]])
-        return line
+        for i in range(number_of_balls):
+            position = balls[str(i)].position
+            radius = balls[str(i)].radius
+            circle = plt.Circle(position, radius, color="red")
+            ax.add_patch(circle)
+        return ax
 
-    ani = FuncAnimation(fig, update, init_func=init, interval=1000/60, blit=True)
+    ani = FuncAnimation(fig, update, init_func=init, interval=1000/60)
     return ani
 
 ani = trace(Pool(5))
