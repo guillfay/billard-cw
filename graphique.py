@@ -23,13 +23,16 @@ def trace(billard):
     frame_template = 'frame = %i'  # affichage dela frame
     frame_text = ax.text(0.01, 1.01, '', transform=ax.transAxes)
 
-
     def init():
         """Fonction initialisant l'affichage"""
-        line1, = ax.plot([board.corners[0][0], board.corners[1][0]], [board.corners[0][1], board.corners[1][1]], linestyle="-", color="black")
-        line2, = ax.plot([board.corners[1][0], board.corners[2][0]], [board.corners[1][1], board.corners[2][1]], linestyle="-", color="black")
-        line3, = ax.plot([board.corners[2][0], board.corners[3][0]], [board.corners[2][1], board.corners[3][1]], linestyle="-", color="black")
-        line4, = ax.plot([board.corners[3][0], board.corners[0][0]], [board.corners[3][1], board.corners[0][1]], linestyle="-", color="black")
+        line1, = ax.plot([board.corners[0][0], board.corners[1][0]], [board.corners[0][1], board.corners[1][1]],
+                         linestyle="-", color="black")
+        line2, = ax.plot([board.corners[1][0], board.corners[2][0]], [board.corners[1][1], board.corners[2][1]],
+                         linestyle="-", color="black")
+        line3, = ax.plot([board.corners[2][0], board.corners[3][0]], [board.corners[2][1], board.corners[3][1]],
+                         linestyle="-", color="black")
+        line4, = ax.plot([board.corners[3][0], board.corners[0][0]], [board.corners[3][1], board.corners[0][1]],
+                         linestyle="-", color="black")
         lines = [line1, line2, line3, line4]
         return lines
 
