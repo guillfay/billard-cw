@@ -2,6 +2,7 @@ import numpy as np
 
 
 class Ball:
+
     def __init__(self, number, initial_position, radius=0.0286, mass=0.162):
         assert type(initial_position) is np.ndarray, "la position doit être un vecteur numpy"
         assert initial_position.shape == (2,), "la position doit être un vecteur de dimension (2,)"
@@ -12,6 +13,10 @@ class Ball:
         self.mass = mass  # en kg
         self.position = initial_position
         self.speed = np.array([0, 0])
+
+    def set_size(self, new_radius, new_mass): #dimension = [radius, mass]
+        self.radius = new_radius
+        self.mass = new_mass
 
     def update_position(self, vecteur_position):
         self.position = vecteur_position
@@ -44,22 +49,32 @@ class Board:
     def set_middle(self):
         return np.array([self.width / 2, self.length / 2])
 
+    def set_size(self, new_length, new_width): #dimension = [radius, mass]
+        self.length = new_length
+        self.width = new_width
+        self.middle = self.set_middle()
+        self.corners = self.set_corners()
+
     def __str__(self):
         return "La table a une largeur " + str(self.width) + " et de longueur " + str(
             self.length) + " a ses coins aux position " + str(
             self.corners) + " et son milieu se trouve aux coordonnées" + str(self.middle) + "."
 
-    def create_pool(self,n):
-        pool = {}
-        pool["Board"] = self
-        for i in range(n):
-            pool["Ball"+str(i)] = Ball(i,self.middle)
-        return pool
+class Pool:
 
+    def __init__(self,number_of_balls):
+        self.board = Board()
+        balls = {}
+        for i in range(number_of_balls):
+            balls["Ball"+str(i)] = Ball(i,self.board.middle)
+        self.balls = balls
+        self.number_of_balls = number_of_balls
 
-#B1 = Ball(1, np.array([0, 0]))
-#print(B1)
-#T = Board()
-#B1.update_position(np.array([1, 1]))
-#print(T)
-#print(T.create_pool(5))
+    def __str__(self):
+        for i in range(self.number_of_balls):
+            print(self.balls["Ball"+str(i)])
+
+        
+
+#billard = Pool(5)
+#print(billard)
