@@ -20,6 +20,9 @@ def trace(billard):
     ax.set_aspect('equal')
     ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
     ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
+    frame_template = 'frame = %i'  # affichage dela frame
+    frame_text = ax.text(0.01, 1.01, '', transform=ax.transAxes)
+
 
     def init():
         """Fonction initialisant l'affichage"""
@@ -38,7 +41,8 @@ def trace(billard):
             radius = ball.radius
             circle = plt.Circle(position, radius, color="red")
             ax.add_patch(circle)
-        return ax
+        frame_text.set_text(frame_template % frame)
+        return ax, frame_text
 
     ani = FuncAnimation(fig, update, init_func=init, interval=1000 / 60, cache_frame_data=False)
     return ani
