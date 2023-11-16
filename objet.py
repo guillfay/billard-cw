@@ -78,8 +78,9 @@ class Cue:
     def __init__(self, mass):
         self.mass = mass
 
-    def frappe(self, puissance, angle, ball):  # puissance en J, angle en rad par rapport à l'axe x
-        v_cue = np.sqrt(2 * puissance / self.mass)
+    def frappe(self, energie, angle, ball):
+        """Energie en J, angle en rad par rapport à l'axe x"""
+        v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
         ball.update_speed([np.cos(angle) * v_ball, np.sin(angle) * v_ball])
 
