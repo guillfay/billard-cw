@@ -49,6 +49,13 @@ class Board:
             self.length) + " a ses coins aux position " + str(
             self.corners) + " et son milieu se trouve aux coordonnées" + str(self.middle) + "."
 
+    def create_pool(n):
+        pool = {}
+        pool["Board"] = Board()
+        for i in range(n):
+            pool["Ball"+str(i)] = Ball()
+        return pool
+
 
 B1 = Ball(1, np.array([0, 0]))
 print(B1.properties())
