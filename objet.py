@@ -14,13 +14,17 @@ class Ball:
         self.speed = np.array([0, 0])
 
     def set_size(self, new_radius, new_mass):
+        assert new_mass > 0, "la masse doit être un nombre positive"
+        assert new_radius > 0, "le rayon doit être un nombre positive"
         self.radius = new_radius
         self.mass = new_mass
 
     def update_position(self, vecteur_position):
+        assert type(vecteur_position) is np.ndarray, "la position doit être un vecteur numpy"
         self.position = vecteur_position
 
     def update_speed(self, vector_vitesse):
+        assert type(vector_vitesse) is np.ndarray, "la vitesse doit être un vecteur numpy"
         self.speed = vector_vitesse
 
     def __str__(self):
@@ -48,6 +52,8 @@ class Board:
         return np.array([self.width / 2, self.length / 2])
 
     def set_size(self, new_length, new_width):
+        assert new_length > 0, "la longueur doit être un nombre positive"
+        assert new_width > 0, "la largeur doit être un nombre positive"
         self.length = new_length
         self.width = new_width
         self.middle = self.get_middle()
@@ -82,7 +88,7 @@ class Cue:
         """Energie en J, angle en rad par rapport à l'axe x"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
-        ball.update_speed([np.cos(angle) * v_ball, np.sin(angle) * v_ball])
+        ball.update_speed(np.array([np.cos(angle) * v_ball, np.sin(angle) * v_ball]))
 
 
 # billard = Pool(5)
