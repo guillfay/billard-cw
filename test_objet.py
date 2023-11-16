@@ -2,7 +2,7 @@ from objet import Ball, Board, Pool, Cue
 import numpy as np
 import pytest
 
-# utiliser la commande ERROR: file or directory not found: test_*.py
+# utiliser la commande pytest --cov=billard-cw --cov-report html 
 
 def test_ball_init():
     ball=Ball(1,np.array([2, 3]))
@@ -30,7 +30,9 @@ def test_update_speed():
 
 def test_str_ball():
     ball=Ball(1,np.array([2, 3]))
-    assert ball.__str__()=="La boule numéro " + str(1) + " se trouve à la position " + str(np.array([2, 3])) + " et a un vecteur vitesse de " + str(np.array([0,0])) + "."
+    assert ball.__str__()=="La boule numéro " + str(1) 
+    + " se trouve à la position " + str(np.array([2, 3])) 
+    + " et a un vecteur vitesse de " + str(np.array([0,0])) + "."
 
 def test_board_init():
     board=Board()
@@ -57,8 +59,14 @@ def test_set_size_board():
 
 def test_str_board():
     board=Board()
-    assert board.__str__()=="La table a une largeur " + str(1.27) + " et de longueur " + str(2.54) + " a ses coins aux position " + str(
-            [np.array([0, 0]),np.array([0, 2.54]),np.array([1.27, 2.54]),np.array([1.27, 0])]) + " et son milieu se trouve aux coordonnées" + str(np.array([1.27/2,2.54/2])) + "."
+    assert board.__str__()=="La table a une largeur " 
+    + str(1.27) 
+    + " et de longueur " 
+    + str(2.54) 
+    + " a ses coins aux position " 
+    + str([np.array([0, 0]),np.array([0, 2.54]),np.array([1.27, 2.54]),np.array([1.27, 0])]) 
+    + " et son milieu se trouve aux coordonnées" 
+    + str(np.array([1.27/2,2.54/2])) + "."
 
 def test_pool_init():
     pool=Pool(3)
