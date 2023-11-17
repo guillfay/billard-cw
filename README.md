@@ -34,11 +34,12 @@ pip install -r requirements.txt
 
 ### Détails des fonctionnalités : 
 - **Sprint 1 : mise en place du modèle du billard**
-    - Fonctionnalité 1 : représentation d’une table de billard et d’une boule
-    - Fonctionnalité 2 : affichage du billard et d’une boule avec `matplotlib`
+    - :heavy_check_mark: Fonctionnalité 1 : représentation d’une table de billard et d’une boule
+    - :heavy_check_mark: Fonctionnalité 2 : affichage du billard et d’une boule avec `matplotlib`
 - **Sprint 2 : mise en place du mouvement libre au sein du billard**
-    - Fonctionnalité 3 : simulation du mouvement d’une boule initié par un coup frappé avec la queue
+    - :heavy_check_mark: Fonctionnalité 3 : simulation du mouvement d’une boule initié par un coup frappé avec la queue
     - Fonctionnalité 4 : modélisation les interactions entre la boule et le bord de la table de billard (rebonds)
+    - :heavy_check_mark: Fonctionnalité 5 : Mise à jour de la position des boules en fonction de la vitesse
 - **Sprint 3 : mise en place des interactions entre les boules**
     - Fonctionnalité 5 : modélisation du choc entre les boules
     - Fonctionnalité 6 : modélisation des frottements avec le tapis
