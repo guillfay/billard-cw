@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
 
 # --------------------------------------------------------------------------------------------
@@ -30,7 +29,7 @@ def trace(billard, dynamic_func):
 
     def init():
         """Fonction initialisant l'affichage"""
-        ax.add_patch(patches.Rectangle((0, 0), board.corners[2][0], board.corners[2][1], edgecolor="black", facecolor=("#32a852"), fill=True))
+        ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1], edgecolor="black", facecolor=("#32a852"), fill=True))
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""
