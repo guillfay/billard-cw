@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
@@ -19,10 +18,11 @@ def trace(billard, dynamic_func):
     ax.set_aspect('equal')
     ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
     ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
-    frame_template = 'frame = %i'  # affichage dela frame
-    frame_text = ax.text(0.01, 1.01, '', transform=ax.transAxes)
+    # Affichage dela frame
+    frame_template = "frame = %i"
+    frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
-    # création d'un dictionnaire des boules et ajout sur le graphique
+    # Création d'un dictionnaire des boules et ajout sur le graphique
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
     for circle in circles.values():
         ax.add_patch(circle)
@@ -51,6 +51,7 @@ def trace(billard, dynamic_func):
 
     ani = FuncAnimation(fig, update, init_func=init, interval=1000 / 60, cache_frame_data=False)
     return ani
+
 
 
 """from objet import *
