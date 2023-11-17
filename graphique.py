@@ -6,7 +6,7 @@ from matplotlib.animation import FuncAnimation
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard):
+def trace(billard, dynamic_func):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -38,6 +38,7 @@ def trace(billard):
     def update(frame):
         """Fonction mettant à jour la position des boules"""
         # Il faut encore appeler la fonction de mise à jour de position, qui n'est pas encore créée.
+        dynamic_func()
         for ball in balls.values():
             position = ball.position
             radius = ball.radius
