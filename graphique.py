@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
 
 # --------------------------------------------------------------------------------------------
@@ -18,7 +19,7 @@ def trace(billard, dynamic_func):
     ax.set_aspect('equal')
     ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
     ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
-    # Affichage dela frame
+    # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
@@ -29,16 +30,7 @@ def trace(billard, dynamic_func):
 
     def init():
         """Fonction initialisant l'affichage"""
-        line1, = ax.plot([board.corners[0][0], board.corners[1][0]], [board.corners[0][1], board.corners[1][1]],
-                         linestyle="-", color="black")
-        line2, = ax.plot([board.corners[1][0], board.corners[2][0]], [board.corners[1][1], board.corners[2][1]],
-                         linestyle="-", color="black")
-        line3, = ax.plot([board.corners[2][0], board.corners[3][0]], [board.corners[2][1], board.corners[3][1]],
-                         linestyle="-", color="black")
-        line4, = ax.plot([board.corners[3][0], board.corners[0][0]], [board.corners[3][1], board.corners[0][1]],
-                         linestyle="-", color="black")
-        lines = [line1, line2, line3, line4]
-        return lines
+        ax.add_patch(patches.Rectangle((0, 0), board.corners[2][0], board.corners[2][1], edgecolor="black", facecolor=("#32a852"), fill=True))
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""
@@ -54,6 +46,6 @@ def trace(billard, dynamic_func):
 
 
 
-"""from objet import *
+from objet import *
 animation = trace(Pool(2), lambda: None)
-plt.show()"""
+plt.show()
