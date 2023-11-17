@@ -1,85 +1,65 @@
 import numpy as np
 
+
 def detect(board, ball, dt):
-    x = ball.position[0]
-    y = ball.position[1]
-    vx = ball.speed[0]
-    vy = ball.speed[1]
-    xp = x + vx*dt
-    yp = y + vy*dt
-    r = ball.radius
-    ylignbetween12 = board.corners[0][1] + r
-    xlignbetween23 = board.corners[1][0] - r
-    ylignbetween34 = board.corners[2][1] - r
-    xlignbetween41 = board.corners[3][0] + r
-    if yp < ylignbetween12 and xlignbetween41 < xp < xlignbetween23:
-        return 1
-    elif xp > xlignbetween23 and ylignbetween12 < yp < ylignbetween34:
-        return 2
-    elif yp > ylignbetween34 and xlignbetween41 < xp < xlignbetween23:
-        return 3
-    elif xp < xlignbetween41 and ylignbetween12 < yp < ylignbetween34:
-        return 4
-    elif xlignbetween41 < xp < xlignbetween23 and ylignbetween12 < yp < ylignbetween34:
-        return 0
-    else: #ici c'est pour gagner du temps de calcul je me dis que c'est assez rare quand meme d'avoir 2 rebonds
-        if yp < ylignbetween12 and xp < xlignbetween41:
-            return 11
-        elif yp < ylignbetween12 and xp > xlignbetween23:
-            return 22
-        if yp > ylignbetween34 and xp > xlignbetween23:
-            return 33
-        elif yp > ylignbetween34 and xp < xlignbetween41:
-            return 44
-        
+    """Cette fonction prend en argument une table, une balle et l'incrément de temps.
+    Elle calcule la position de la boule après dt, et renvoie un tuple indiquant s'il y a un ou des rebonds sur les
+    bandes. L'ordre du tuple part du bord de gauche, en x=0, et tourne dans le sens horaire"""
 
-def rebond(board, ball, dt):
-    x = ball.position[0]
-    y = ball.position[1]
-    vx = ball.speed[0]
-    vy = ball.speed[1]
-    r = ball.radius
-    ylignbetween12 = board.corners[0][1] + r
-    xlignbetween23 = board.corners[1][0] - r
-    ylignbetween34 = board.corners[2][1] - r
-    xlignbetween41 = board.corners[3][0] + r
-    check = detect(board, ball, dt)
-    if check == 1:
-        speedafter = np.array([vx, -vy])
-        posafter = np.array([x + vx*dt, -(y + vy*dt) + 2*ylignbetween12])
-    elif check == 2:
-        speedafter = np.array([-vx, vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween23, y + vy*dt])
-    elif check == 3:
-        speedafter = np.array([vx, -vy])
-        posafter = np.array([x + vx*dt, -(y + vy*dt) + 2*ylignbetween34])
-    elif check == 4:
-        speedafter = np.array([-vx, vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween41, y + vy*dt])
-    elif check == 11:
-        speedafter = np.array([-vx, -vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween41, -(y + vy*dt) + 2*ylignbetween12])
-    elif check == 22:
-        speedafter = np.array([-vx, -vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween23, -(y + vy*dt) + 2*ylignbetween12])
-    elif check == 33:
-        speedafter = np.array([-vx, -vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween23, -(y + vy*dt) + 2*ylignbetween34])
-    elif check == 44:
-        speedafter = np.array([-vx, -vy])
-        posafter = np.array([-(x + vx*dt) + 2*xlignbetween41, -(y + vy*dt) + 2*ylignbetween34])
-    return (posafter, speedafter)
+    pos_virt = ball.position + ball.speed * dt
+
+    x_min = min([corner[0] for corner in board.corners]) + ball.radius
+    x_max = max([corner[0] for corner in board.corners]) - ball.radius
+    y_min = min([corner[1] for corner in board.corners]) + ball.radius
+    y_max = max([corner[1] for corner in board.corners]) - ball.radius
+
+    return pos_virt[0] < x_min, pos_virt[1] > y_max, pos_virt[0] > x_max, pos_virt[1] < y_min
 
 
-'''script de test
-theta = -np.pi/2
-energy = 0.1 #energie de la frappe
-dt = 0.1 #pas de temps
-B = Board()
-Ball = Ball(1, np.array([0.02, 0.02])) #position initial proche du coin en bas à gauche
-Cue = Cue(1)
-Cue.frappe(energy, theta, Ball)
-print(Ball.speed)
-print(Ball.position)
-print(rebond(B, Ball, dt))
-'''
+def rebond(board, ball, dt, bounce_status):
+    pos_reel = ball.position + ball.speed * dt
+    speed_reel = ball.speed
+
+    x_min = min([corner[0] for corner in board.corners]) + ball.radius
+    x_max = max([corner[0] for corner in board.corners]) - ball.radius
+    y_min = min([corner[1] for corner in board.corners]) + ball.radius
+    y_max = max([corner[1] for corner in board.corners]) - ball.radius
+    def rebond_x(x_bord, x_virt):
+        return 2 * x_bord - x_virt
+
+    def rebond_y(y_bord, y_virt):
+        return 2 * y_bord - y_virt
+
+    if bounce_status[0]:
+        pos_reel[0] = rebond_x(x_min, pos_reel[0])
+        speed_reel = speed_reel * np.array([-1, 1])
+    if bounce_status[2]:
+        pos_reel[0] = rebond_x(x_max, pos_reel[0])
+        speed_reel = speed_reel * np.array([-1, 1])
+
+    if bounce_status[3]:
+        pos_reel[1] = rebond_y(y_min, pos_reel[1])
+        speed_reel = speed_reel * np.array([1, -1])
+    if bounce_status[1]:
+        pos_reel[1] = rebond_y(y_max, pos_reel[1])
+        speed_reel = speed_reel * np.array([1, -1])
+
+    return pos_reel, speed_reel
+
+
+# script de test
+"""from objet import *
+dt = 0.001 #pas de temps
+Board = Board()
+Ball = Ball(1, np.array([0.003, 0.003])) #position initial proche du coin en bas à gauche
+
+bounce_status = detect(Board, Ball, dt)
+print(Ball)
+print(bounce_status)
+
+print("### update speed ###")
+Ball.update_speed(np.array([-1,-2]))
+bounce_status = detect(Board, Ball, dt)
+print(Ball)
+print(bounce_status)
+print(rebond(Board, Ball, dt, bounce_status))"""
