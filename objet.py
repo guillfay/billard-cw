@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Ball:
-    def __init__(self, number, initial_position, radius=0.0286, mass=0.162):
+    def __init__(self, number, initial_position, radius=0.00286, mass=0.162):
         assert type(initial_position) is np.ndarray, "la position doit être un vecteur numpy"
         assert initial_position.shape == (2,), "la position doit être un vecteur de dimension (2,)"
         assert mass > 0, "la masse doit être un nombre positive"
