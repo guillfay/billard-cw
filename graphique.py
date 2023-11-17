@@ -6,7 +6,7 @@ from matplotlib.animation import FuncAnimation
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard):
+def trace(billard, dynamic_func):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -21,6 +21,11 @@ def trace(billard):
     ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
     frame_template = 'frame = %i'  # affichage dela frame
     frame_text = ax.text(0.01, 1.01, '', transform=ax.transAxes)
+
+    # création d'un dictionnaire des boules et ajout sur le graphique
+    circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
+    for circle in circles.values():
+        ax.add_patch(circle)
 
     def init():
         """Fonction initialisant l'affichage"""
@@ -38,18 +43,16 @@ def trace(billard):
     def update(frame):
         """Fonction mettant à jour la position des boules"""
         # Il faut encore appeler la fonction de mise à jour de position, qui n'est pas encore créée.
-        for ball in balls.values():
-            position = ball.position
-            radius = ball.radius
-            circle = plt.Circle(position, radius, color="red")
-            ax.add_patch(circle)
+        dynamic_func()
+        for key in balls:
+            circles[key].set_center(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
-        return ax, frame_text
+        return circles, frame_text
 
     ani = FuncAnimation(fig, update, init_func=init, interval=1000 / 60, cache_frame_data=False)
     return ani
 
 
-# from objet import *
-# animation = trace(Pool(2))
-# plt.show()
+"""from objet import *
+animation = trace(Pool(2), lambda: None)
+plt.show()"""
