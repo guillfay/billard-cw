@@ -66,17 +66,17 @@ class Board:
 
 
 class Pool:
-    def __init__(self, number_of_balls):
-        self.board = Board()
+    def __init__(self, number_of_balls, length=2.54, width=1.27):
+        self.board = Board(length=length, width=width)
         self.balls = {}
         for i in range(number_of_balls):
-            self.balls[str(i)] = Ball(i, self.board.middle)
+            self.balls[i] = Ball(i, self.board.middle)
         self.number_of_balls = number_of_balls
 
     def __str__(self):
         chaine = ""
         for i in range(self.number_of_balls):
-            chaine += str(self.balls[str(i)]) + " - "
+            chaine += str(self.balls[i]) + " - "
         return chaine
 
 
