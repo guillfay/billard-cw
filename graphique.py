@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from objet import *
 
 
 # --------------------------------------------------------------------------------------------
@@ -51,5 +50,6 @@ def trace(billard):
     return ani
 
 
-animation = trace(Pool(1))
-plt.show()
+# from objet import *
+# animation = trace(Pool(2))
+# plt.show()
