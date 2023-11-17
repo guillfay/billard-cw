@@ -45,6 +45,6 @@ def trace(billard, dynamic_func):
 
 
 
-from objet import *
+"""from objet import *
 animation = trace(Pool(2), lambda: None)
-plt.show()
+plt.show()"""
