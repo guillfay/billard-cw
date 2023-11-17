@@ -63,5 +63,5 @@ my_pool = Pool(2)
 cue = Cue(0.5)
 cue.frappe(0.5, np.pi/3, my_pool.balls[0])
 
-animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=0.01))
+animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=1/60))
 plt.show()
