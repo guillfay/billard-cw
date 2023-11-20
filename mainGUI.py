@@ -73,6 +73,8 @@ class InputFrame(ttk.Frame):
         # Création des entrées
         self.choix = tk.IntVar()
         self.choix.set(1)
+        self.n_ball = tk.IntVar()
+        self.n_ball.set(3)
 
         self.choix1_entry = ttk.Radiobutton(frame1, text="Français", variable=self.choix, value=1)
         self.choix1_entry.grid(column=1, row=0)
@@ -102,13 +104,13 @@ class InputFrame(ttk.Frame):
     def valider(self):
         """Récupération des valeurs et mise à jour de l'objet pendule"""
         if self.choix==1 :
-            n_ball = 3
+            self.n_ball = 3
         elif self.choix==2 :
-            n_ball = 16
+            self.n_ball = 16
         elif self.choix==3 :
-            n_ball = 16
+            self.n_ball = 16
         else :
-            n_ball = 1
+            self.n_ball = 1
         angle = float(self.angle_entry.get())
         force = float(self.force_entry.get())
         self.update_billard()
