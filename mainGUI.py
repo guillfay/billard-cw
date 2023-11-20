@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from functools import partial
 from objet import *
 from graphique import *
 from dynamic import *
@@ -40,6 +41,7 @@ class InputFrame(ttk.Frame):
         # Création des colonnes et lignes pour les objets
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
@@ -51,6 +53,7 @@ class InputFrame(ttk.Frame):
         self.rowconfigure(7, weight=1)
         self.rowconfigure(8, weight=1)
         self.rowconfigure(9, weight=1)
+        self.rowconfigure(10, weight=1)
 
         # Enregistrement des fonctions de màj
         self.update_billard = update_billard
@@ -63,12 +66,15 @@ class InputFrame(ttk.Frame):
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
         frame2 = ttk.Labelframe(self, text="Paramètres de frappe")
         frame2.grid(column=0, row=7, columnspan=2, sticky="WE")
+        frame3 = ttk.Labelframe(self, text="Paramètres d'animation")
+        frame3.grid(column=0, row=9, columnspan=2, sticky="WE")
         ttk.Label(frame1, text="Type de billard choisi :").grid(column=0, row=0)
         ttk.Label(frame1, text="Masse des boules :").grid(column=0, row=4)
         ttk.Label(frame1, text="Rayon des boules :").grid(column=0, row=5)
         ttk.Label(frame1, text="Longueur/largeur de la table :").grid(column=0, row=6)
         ttk.Label(frame2, text="Angle de frappe :").grid(column=0, row=7)
         ttk.Label(frame2, text="Force de frappe :").grid(column=0, row=8)
+        ttk.Label(frame3, text="Pas de temps :").grid(column=0, row=9)
 
         # Création des entrées
         self.choix = tk.IntVar()
@@ -98,8 +104,11 @@ class InputFrame(ttk.Frame):
         self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25, resolution=1)
         self.force_entry.grid(column=1, row=8)
         
+        self.deltaT_entry = ttk.Entry(frame3)
+        self.deltaT_entry.grid(column=1, row=9)
+        
         self.validate_button = tk.Button(self, text="Tirer", activebackground="green", fg="green", command=valider)
-        self.validate_button.grid(column=1, row=9)
+        self.validate_button.grid(column=1, row=10)
         
     def valider(self):
         """Récupération des valeurs et mise à jour de l'objet pendule"""
@@ -137,7 +146,8 @@ class App(tk.Tk):
     
     def __create_widgets(self):
         # Création de la partie graphe
-        self.grap_frame = GraphFrame(self, self.billard, update_pool)
+        partial_update_pool = partial(update_pool, self.billard, 0)
+        self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
         # Création de la partie configuration
