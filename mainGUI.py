@@ -6,6 +6,9 @@ from graphique import *
 from dynamic import *
 
 
+# --------------------------------------------------------------------------------------------
+# --------------------------------------FONCTIONNALITE 7--------------------------------------
+# --------------------------------------------------------------------------------------------
 
 class GraphFrame(ttk.Frame):
     """Classe permettant de générer la partie graphique de la fenêtre"""
@@ -80,7 +83,7 @@ class InputFrame(ttk.Frame):
 
         self.validate_button = tk.Button(self, text="Tirer", activebackground="green", fg="green", command=valider)
         self.validate_button.grid(column=1, row=8)
-
+        
     def valider(self):
         """Récupération des valeurs et mise à jour de l'objet pendule"""
         if self.choix==1 :
