@@ -24,7 +24,7 @@ def trace(billard, dynamic_func):
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
     # Création d'un dictionnaire des boules et ajout sur le graphique
-    circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
+    circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
 
     def init():
         """Fonction initialisant l'affichage"""
@@ -48,6 +48,7 @@ def trace(billard, dynamic_func):
     return ani
 
 
-"""from objet import *
-animation = trace(Pool(4), lambda: None)
-plt.show()"""
+# import objet as o
+# import objet_game as og
+# animation = trace(og.Pool('anglais'), lambda: None)
+# plt.show()
