@@ -1,6 +1,7 @@
 import objet as objet
 import dynamic as dynamic
 import numpy as np
+import copy 
 
 def update_pool(pool,deltaT):
     #version sans interactions entre les boules et sans frottements
@@ -12,7 +13,6 @@ def update_pool(pool,deltaT):
     for ball in balls.values():
         virtual_position = ball.position + deltaT*ball.speed 
         
-
 def on_the_board(position_vector,width,length):
     if position_vector[0] > width or position_vector[0] < 0 :
         return False
@@ -46,14 +46,13 @@ def norm(vector):
 
 def collided(ball1,ball2):
     if distance(ball1,ball2) < ball1.radius + ball2.radius : 
-        print(ball1.radius + ball2.radius)
         return True
     else :
         return False
 
 def packed(ball1,ball2,epsilon):
-    if distance(ball1,ball2) < ball1.radius + ball2.radius + epsilon : 
-        return True
+    if distance(ball1,ball2) <= ball1.radius + ball2.radius + epsilon : #le egal est tres important pour update_pool
+        return True 
     else :
         return False
     
@@ -63,14 +62,13 @@ def collision_matrix(balls,number_of_balls):
     for i in range(number_of_balls):
         for j in range(i,number_of_balls):
             matrix[i][j] = collided(balls[i],balls[j])
-            print("testetstetstet", matrix[i][j])
             matrix[j][i] = matrix[i][j]
     return matrix>0
 
 def orientation_vector(ball1,ball2):
     vector = ball1.position - ball2.position
+    print(vector)
     return np.array(vector/norm(vector))
-
 
 class Packed_balls():
     def __init__(self,balls,number_of_balls,epsilon):
@@ -87,6 +85,7 @@ class Packed_balls():
             for j in range(i,number_of_balls):
                 matrix[i][j] = packed(balls[i],balls[j],epsilon)
                 matrix[j][i] = matrix[i][j]
+            matrix[i][i] = 0
         return matrix>0
 
     def get_admission_vector(self):
@@ -95,15 +94,16 @@ class Packed_balls():
         packs = self.packs
         vectors = {}
         for i in range(number_of_balls):
-            vector_i = np.zeros(2)
+            vector_i = np.array([0,0])
             #print(vector_i)
             for j in range(number_of_balls):
-                if i==j:
-                    vector_i += np.array([0,0])
-                else:
+                if self.packs[i][j] and i!=j:
                     #print(orientation_vector(balls[i],balls[j]))
-                    vector_i += orientation_vector(balls[i],balls[j])
-            vectors[str(i)] = vector_i / norm(vector_i)
+                    vector_i = vector_i + orientation_vector(balls[j],balls[i])
+            if norm(vector_i)!=0 :
+                vectors[i] = vector_i / norm(vector_i)
+            else :
+                vectors[i] = vector_i
         return vectors
 
 def impact_time(ball1,ball2,epsilon):
@@ -114,18 +114,18 @@ def impact_time(ball1,ball2,epsilon):
     Delta_Y =  ball2.position[1] - ball1.position[1]
     a = Delta_Vx**2 + Delta_Vy**2
     b = 2*Delta_X*Delta_Vx + 2*Delta_Y*Delta_Vy
-    c = Delta_X + Delta_Y - square_radius
-    Delta = b**2 - 4*a*c
-    sqrt_delta = np.sqrt(Delta)
+    c = Delta_X**2 + Delta_Y**2 - square_radius
     if a == 0 :
         sol1 = -c/b
         sol2 = sol1
     else :
-        sol1 = (b+sqrt_delta)/(2*a)
-        sol2 = (b-sqrt_delta)/(2*a)
+        Delta = b**2 - 4*a*c
+        sqrt_delta = np.sqrt(Delta)
+        sol1 = (-b+sqrt_delta)/(2*a)
+        sol2 = (-b-sqrt_delta)/(2*a)
     sol1 = max(0,sol1)
-    sol2 = max(0,sol1)
-    return min(sol1,sol2)
+    sol2 = max(0,sol2) 
+    return min(sol1,sol2) #on garde la plus petite solution positive
 
 def detection_of_collision(potential_collisions,number_of_balls):
     for i in range(number_of_balls):
@@ -133,9 +133,6 @@ def detection_of_collision(potential_collisions,number_of_balls):
             if potential_collisions[i][j] :
                 return True
     return False
-
-def collision_update_speed():
-    pass
 
 def first_impact_time(pool,potential_collisions,number_of_balls,epsilon):
     matrix = np.zeros((number_of_balls,number_of_balls))
@@ -150,28 +147,51 @@ def first_impact_time(pool,potential_collisions,number_of_balls,epsilon):
     index = np.array(np.unravel_index(np.argmin(matrix), matrix.shape))
     return matrix[index[0]][index[1]]
 
+def update_balls(pool,deltaT,number_of_balls):
+    for i in range(number_of_balls):
+        new_position = pool.balls[i].position + deltaT*pool.balls[i].speed
+        pool.balls[i].update_speed(pool.balls[i].speed)
+        pool.balls[i].update_position(new_position)
+
+def collision_update_speed(pool,number_of_balls,packs):
+    #conservation de la quantité de mouvement
+    #redistribution de p parmis les packs
+    balls = pool.balls
+    initial_speed = np.array([balls[i].speed for i in range(number_of_balls)])
+    for i in range(number_of_balls):
+        for j in range(number_of_balls):
+            if packs.packs[i][j] :
+                pass
+            
+    print(initial_speed)
+    print(packs.admission_vector)
+    pass
+
 def update_real_pool(pool,deltaT,epsilon = 0.01):
-    #version sans frottements
+    #initialisation de l'update
+    ball_radius = pool.ball_radius 
+    ball_mass = pool.ball_mass 
     balls = pool.balls
     number_of_balls = pool.number_of_balls
-    width = pool.board.corners[3][0]
-    length = pool.board.corners[3][1]
+    width = pool.board.corners[2][0]
+    length = pool.board.corners[2][1]
     # iteration naïve sans interactions physiques
-    naive_pool = objet.Pool(number_of_balls)
-    for i in range(number_of_balls):
-        virtual_position = pool.balls[i].position + deltaT*pool.balls[i].speed
-        naive_pool.balls[i].update_speed(pool.balls[i].speed)
-        naive_pool.balls[i].update_position(virtual_position)
+    naive_pool = copy.deepcopy(pool)
+    update_balls(naive_pool,deltaT,number_of_balls) #on update les boules sans chocs pour voir si elles se superposent
     # detection de chocs
     potential_collisions = collision_matrix(naive_pool.balls,number_of_balls)
     if detection_of_collision(potential_collisions,number_of_balls): 
         t_0 = first_impact_time(pool,potential_collisions,number_of_balls,epsilon) #on extrait le moment du premier choc
+        update_balls(pool,t_0,number_of_balls) #on update les boules au moments du premier choc
+        packs = Packed_balls(pool.balls,number_of_balls,epsilon)
+        print(packs.packs)
+        collision_update_speed(pool,number_of_balls,packs)
+
 
 
     #s'il n'y a pas de chocs on regarde s'il y a des rebonds
+    #fin de l'itération on fait les frottements
     # if rebond :
-    print("le billard naif", naive_pool)
-    print("il y a des collisions",detection_of_collision(potential_collisions,number_of_balls))
 
 
 
