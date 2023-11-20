@@ -33,6 +33,7 @@ pip install -r requirements.txt
 - Intégrer la possibilité de jouer une partie de billard anglais/américain
 
 ### Détails des fonctionnalités : 
+#### Objectif 1 : MVP
 - **:white_check_mark: Sprint 1 : mise en place du modèle du billard**
     - :heavy_check_mark: Fonctionnalité 1 : représentation d’une table de billard et d’une boule
     - :heavy_check_mark: Fonctionnalité 2 : affichage du billard et d’une boule avec `matplotlib`
@@ -40,14 +41,18 @@ pip install -r requirements.txt
     - :heavy_check_mark: Fonctionnalité 3 : simulation du mouvement d’une boule initié par un coup frappé avec la queue
     - :heavy_check_mark: Fonctionnalité 4 : modélisation les interactions entre la boule et le bord de la table de billard (rebonds)
     - :heavy_check_mark: Fonctionnalité 5 : Mise à jour de la position des boules en fonction de la vitesse
-- **Sprint 3 : mise en place des interactions entre les boules**
-    - Fonctionnalité 5 : modélisation du choc entre les boules
-    - Fonctionnalité 6 : modélisation des frottements avec le tapis
-- **Sprint 4 : Paramétrer la simulation depuis une ligne de commande**
-    - Fonctionnalité 7 : utilisation du module argparse
-    - Fonctionnalité 8 : écriture d’un programme principal
-    - Fonctionnalité 9 : lancement d’un coup
-- **Sprint 5 : Utilisation d’un GUI**
-    - Fonctionnalité 10 : prise en compte de la rotation de la boule
-    - Fonctionnalité 11 : configuration d’un coup via l’interface graphique
-
+- **:white_check_mark: Sprint 3 : mise en place des interactions entre les boules**
+    - :heavy_check_mark: Fonctionnalité 6 : modélisation du choc entre les boules
+    - :heavy_check_mark: Fonctionnalité 7 : modélisation des frottements avec le tapis
+- **:white_check_mark: Sprint 4 : Paramétrer la simulation depuis une ligne de commande**
+    - :heavy_check_mark: Fonctionnalité 8 : utilisation du module argparse
+    - :heavy_check_mark: Fonctionnalité 9 : écriture d’un programme principal
+    - :heavy_check_mark: Fonctionnalité 10 : lancement d’un coup
+#### Objectif 2 : Un billard avec `pymunk`
+- **:white_check_mark: Sprint 5 : Représentation du billard avec `pymunk`**
+    - :heavy_check_mark: Fonctionnalité 11 : Création d'un billard fonctionnel avec `pymunk`
+    - :heavy_check_mark: Fonctionnalité 12 : prise en compte de la rotation de la boule    
+#### Objectif 3 : un jeu complet
+- **:white_check_mark: Sprint 6 : Utilisation d’un GUI**
+    - :heavy_check_mark: Fonctionnalité 13 : mise en place d'une interface graphique pour lancer un coup "in-game"
+    - :heavy_check_mark: Fonctionnalité 14 : gestion d'une partie de billard
