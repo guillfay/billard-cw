@@ -44,6 +44,9 @@ def distance(ball1,ball2):
 def norm(vector):
     return np.sqrt(vector[0]**2+vector[1]**2)
 
+def scalar_product(vector1,vector2):
+    return vector1[0]*vector2[0] + vector1[1]*vector1[1]
+
 def collided(ball1,ball2):
     if distance(ball1,ball2) < ball1.radius + ball2.radius : 
         return True
@@ -76,6 +79,7 @@ class Packed_balls():
         self.number_of_balls = number_of_balls
         self.packs = self.get_packs(epsilon) # np matrix
         self.admission_vector = self.get_admission_vector()
+        self.neighbors = self.get_neighbors()
 
     def get_packs(self,epsilon):
         number_of_balls = self.number_of_balls
@@ -105,6 +109,17 @@ class Packed_balls():
             else :
                 vectors[i] = vector_i
         return vectors
+    
+    def get_neighbors(self):
+        packs = self.packs
+        number_of_balls = self.number_of_balls
+        neighbors = {i : 0 for i in range(number_of_balls)}
+        for i in range(number_of_balls):
+            for j in range(i+1,number_of_balls):
+                if packs[i][j]:
+                    neighbors[i] += 1
+                    neighbors[j] += 1
+        return neighbors
 
 def impact_time(ball1,ball2,epsilon):
     square_radius = (ball1.radius+ball2.radius+epsilon)**2
@@ -145,6 +160,7 @@ def first_impact_time(pool,potential_collisions,number_of_balls,epsilon):
                 matrix[i][j] = np.inf
             matrix[j][i] = matrix[i][j]
     index = np.array(np.unravel_index(np.argmin(matrix), matrix.shape))
+
     return matrix[index[0]][index[1]]
 
 def update_balls(pool,deltaT,number_of_balls):
@@ -153,18 +169,33 @@ def update_balls(pool,deltaT,number_of_balls):
         pool.balls[i].update_speed(pool.balls[i].speed)
         pool.balls[i].update_position(new_position)
 
+
 def collision_update_speed(pool,number_of_balls,packs):
     #conservation de la quantité de mouvement
     #redistribution de p parmis les packs
     balls = pool.balls
-    initial_speed = np.array([balls[i].speed for i in range(number_of_balls)])
+    initial_speed = np.array([balls[i].speed for i in range(number_of_balls)]) 
+    exchanged_speed = np.zeros((number_of_balls, 2))
+    rebound_speed = np.zeros((number_of_balls, 2))
+    final_speed = np.zeros((number_of_balls, 2))
     for i in range(number_of_balls):
+        received_speed_i = np.array([0,0])
+        print(i)
         for j in range(number_of_balls):
             if packs.packs[i][j] :
-                pass
-            
-    print(initial_speed)
-    print(packs.admission_vector)
+                p_j = balls[j].mass * initial_speed[j]
+                u_ji = orientation_vector(balls[i],balls[j])
+                received_speed_i = received_speed_i + (1-scalar_product(p_j,u_ji))/(balls[i].mass*packs.neighbors[j])*u_ji
+                exchanged_speed[i] = exchanged_speed[i] + received_speed_i
+        p_i = balls[i].mass * initial_speed[i]
+        u_i = packs.admission_vector[i]
+        rebound_speed[i] = scalar_product(u_i,p_i)/(balls[i].mass)*u_i
+    print("exhanged",exchanged_speed)
+    print("rebound",exchanged_speed)
+    for i in range(number_of_balls):
+        final_speed[i] = initial_speed[i]+exchanged_speed[i]+rebound_speed[i]
+        balls[i].update_speed(final_speed[1])
+    print("yeye",final_speed)
     pass
 
 def update_real_pool(pool,deltaT,epsilon = 0.01):
@@ -186,6 +217,7 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
         packs = Packed_balls(pool.balls,number_of_balls,epsilon)
         print(packs.packs)
         collision_update_speed(pool,number_of_balls,packs)
+        print(pool)
 
 
 
