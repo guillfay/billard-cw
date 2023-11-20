@@ -45,7 +45,7 @@ def trace(billard, dynamic_func):
         return circles, frame_text
 
     ani = FuncAnimation(fig, update, init_func=init, interval=1000 / 60, cache_frame_data=False)
-    return ani
+    return fig, ani
 
 
 """from objet import *
