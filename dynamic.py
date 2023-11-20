@@ -1,3 +1,5 @@
+import numpy as np
+
 def update_pool(pool, deltaT):
     # version initiale sans rebond et sans interactions entre les boules et sans frottements
     balls = pool.balls
