@@ -47,6 +47,17 @@ def norm(vector):
 def scalar_product(vector1,vector2):
     return vector1[0]*vector2[0] + vector1[1]*vector1[1]
 
+def scalar(vec1, vec2):
+    return np.dot(vec1, vec2)
+
+def norme(vec):
+    return np.sqrt(vec[0]**2 + vec[1]**2)
+
+def vecmiddle(vec1, vec2):
+    vec = np.sum(vec1, vec2)
+    N = norme(vec)
+    return np.array([vec[0]/N, vec[1]/N])
+
 def collided(ball1,ball2):
     if distance(ball1,ball2) < ball1.radius + ball2.radius : 
         return True
@@ -70,7 +81,6 @@ def collision_matrix(balls,number_of_balls):
 
 def orientation_vector(ball1,ball2):
     vector = ball1.position - ball2.position
-    print(vector)
     return np.array(vector/norm(vector))
 
 class Packed_balls():
@@ -180,7 +190,6 @@ def collision_update_speed(pool,number_of_balls,packs):
     final_speed = np.zeros((number_of_balls, 2))
     for i in range(number_of_balls):
         received_speed_i = np.array([0,0])
-        print(i)
         for j in range(number_of_balls):
             if packs.packs[i][j] :
                 p_j = balls[j].mass * initial_speed[j]
@@ -190,13 +199,168 @@ def collision_update_speed(pool,number_of_balls,packs):
         p_i = balls[i].mass * initial_speed[i]
         u_i = packs.admission_vector[i]
         rebound_speed[i] = scalar_product(u_i,p_i)/(balls[i].mass)*u_i
-    print("exhanged",exchanged_speed)
-    print("rebound",exchanged_speed)
     for i in range(number_of_balls):
         final_speed[i] = initial_speed[i]+exchanged_speed[i]+rebound_speed[i]
         balls[i].update_speed(final_speed[1])
-    print("yeye",final_speed)
-    pass
+      
+def lst_balls_impacted_by_ref(num_ball_ref, dicoimpact, dicoballs):
+    lst = []
+    lst_balls_touching_ref = dicoimpact[num_ball_ref]
+    ballref = dicoballs[num_ball_ref]
+    for num_ball_touching_ref in lst_balls_touching_ref :
+        ball_touching_ref = dicoballs[num_ball_touching_ref]
+        vref_scalar_v = scalar(ballref.speed, ball_touching_ref.position - ballref.position)
+        if vref_scalar_v >= 0:
+            lst.append(num_ball_touching_ref)
+    return lst
+
+
+def update_speed_collision(pool,number_of_balls, packs):
+    pack = packs.packs
+    dicoballs = pool.balls
+    n = number_of_balls
+    dicoimpact = {} 
+    for i in range(n) : # moyen d'augmenter la rapidité ici si pb
+        check = dicoimpact.get(i, False)
+        for j in range(n):
+            if pack[i][j]:
+                if not check : 
+                    dicoimpact[i] = [j]
+                else :
+                    dicoimpact[i].append(j)
+    dicoimpact_by_ref = {}
+    dico_dv = {}
+    for i in range(n):
+        dico_dv[i] = 0
+    for num_ball_ref in dicoimpact:
+        ballref = dicoballs[num_ball_ref]
+        lst = lst_balls_impacted_by_ref(num_ball_ref, dicoimpact, dicoballs)
+        dicoimpact_by_ref[num_ball_ref] = lst
+        if len(lst) == 1:
+            num_ball_impacted1 = lst[0]
+            ballimpacted1 = dicoballs[num_ball_impacted1]
+            vec_refto1 = ballimpacted1.position - ballref.position
+            vec_refto1 = vec_refto1 / norme(vec_refto1)
+            dvimpacted1 = scalar(ballref.speed, vec_refto1) * vec_refto1
+            dvref = - dvimpacted1
+            dico_dv[num_ball_impacted1] += dvimpacted1
+            dico_dv[num_ball_ref] += dvref
+        elif len(lst) == 2:
+            num_ball_impacted1 = lst[0]
+            num_ball_impacted2 = lst[1]
+            ballimpacted1 = dicoballs[num_ball_impacted1]
+            ballimpacted2 = dicoballs[num_ball_impacted2]
+            vec_refto1 = ballimpacted1.position - ballref.position
+            vec_refto1 = vec_refto1 / norme(vec_refto1)
+            vec_refto2 = ballimpacted2.position - ballref.position
+            vec_refto2 = vec_refto2 / norme(vec_refto2)
+            vec_reftomiddle12 = vecmiddle(vec_refto1, vec_refto2)
+            l = scalar(vec_refto1, vec_reftomiddle12)
+            h = scalar(ballref.speed, vec_reftomiddle12) #voir schéma pour comprendre
+            rsquare = (h**2) * (1-l**2) / (l**2)
+            n1 = np.sqrt(rsquare + (h**2))
+            n2 = n1
+            dvimpacted1 = n1 * vec_refto1
+            dvimpacted2 = n2 * vec_refto2
+            dvref = - h
+            scalar1 = scalar(ballref.speed + dvref, vec_refto1)
+            scalar2 = scalar(ballref.speed + dvref, vec_refto2)
+            if scalar1 >= 0:
+                dvimpacted1 += scalar1 * vec_refto1
+                dvref += - dvimpacted1
+            elif scalar2 >= 0:
+                dvimpacted2 += scalar2 * vec_refto2
+                dvref += - dvimpacted2
+            dico_dv[num_ball_impacted1] += dvimpacted1
+            dico_dv[num_ball_impacted2] += dvimpacted2
+            dico_dv[num_ball_ref] += dvref
+        elif len(lst) == 3:
+            num_ball_impacted1 = lst[0]
+            num_ball_impacted2 = lst[1]
+            num_ball_impacted3 = lst[2]
+            ballimpacted1 = dicoballs[num_ball_impacted1]
+            ballimpacted2 = dicoballs[num_ball_impacted2]
+            ballimpacted3 = dicoballs[num_ball_impacted3]
+            vec_refto1 = ballimpacted1.position - ballref.position
+            vec_refto1 = vec_refto1 / norme(vec_refto1)
+            vec_refto2 = ballimpacted2.position - ballref.position
+            vec_refto2 = vec_refto2 / norme(vec_refto2)
+            vec_refto3 = ballimpacted3.position - ballref.position
+            vec_refto3 = vec_refto3 / norme(vec_refto3)
+        
+        #jusqu'ici tout roule normalement mais pour le reste du cas ou la boule de reference touche 3 boules en même temps je seche complet...
+        
+            """vec_reftomiddle12 = vecmiddle(vec_refto1, vec_refto2)
+            vec_reftomiddle12 = vecmiddle(vec_refto1, vec_refto2)
+            l = scalar(vec_refto1, vec_reftomiddle12)
+            h = scalar(ballref.speed, vec_reftomiddle12)
+            rsquare = (h**2) * (1-l**2) / (l**2)
+            n1 = np.sqrt(rsquare + (h**2))
+            n2 = n1
+            dvimpacted1 = n1 * vec_refto1
+            dvimpacted2 = n2 * vec_refto2
+            dvref = - h
+            scalar1 = scalar(ballref.speed + dvref, vec_refto1)
+            scalar2 = scalar(ballref.speed + dvref, vec_refto2)
+            if scalar1 >= 0:
+                dvimpacted1 += scalar1 * vec_refto1
+                dvref += - dvimpacted1
+            elif scalar2 >= 0:
+                dvimpacted2 += scalar2 * vec_refto2
+                dvref += - dvimpacted2
+            dico_dv[num_ball_impacted1] += dvimpacted1
+            dico_dv[num_ball_impacted2] += dvimpacted2
+            dico_dv[num_ball_ref] += dvref"""
+
+    for num_ball in dico_dv :
+        ball = dicoballs[num_ball]
+        ball.speed = ball.speed + dico_dv[num_ball]
+
+def rebond(board, ball, dt, bounce_status):
+    pos_reel = ball.position + ball.speed * dt
+    speed_reel = ball.speed
+
+    x_min = min([corner[0] for corner in board.corners]) + ball.radius
+    x_max = max([corner[0] for corner in board.corners]) - ball.radius
+    y_min = min([corner[1] for corner in board.corners]) + ball.radius
+    y_max = max([corner[1] for corner in board.corners]) - ball.radius
+    
+    def rebond_x(x_bord, x_virt):
+        return 2 * x_bord - x_virt
+
+    def rebond_y(y_bord, y_virt):
+        return 2 * y_bord - y_virt
+
+    if bounce_status[0]:
+        pos_reel[0] = rebond_x(x_min, pos_reel[0])
+        speed_reel = speed_reel * np.array([-1, 1])
+    if bounce_status[2]:
+        pos_reel[0] = rebond_x(x_max, pos_reel[0])
+        speed_reel = speed_reel * np.array([-1, 1])
+    if bounce_status[3]:
+        pos_reel[1] = rebond_y(y_min, pos_reel[1])
+        speed_reel = speed_reel * np.array([1, -1])
+    if bounce_status[1]:
+        pos_reel[1] = rebond_y(y_max, pos_reel[1])
+        speed_reel = speed_reel * np.array([1, -1])
+
+    return pos_reel, speed_reel
+
+
+def detect(board, ball, dt):
+    """Cette fonction prend en argument une table, une balle et l'incrément de temps.
+    Elle calcule la position de la boule après dt, et renvoie un tuple indiquant s'il y a un ou des rebonds sur les
+    bandes. L'ordre du tuple part du bord de gauche, en x=0, et tourne dans le sens horaire"""
+
+    pos_virt = ball.position + ball.speed * dt
+
+    x_min = min([corner[0] for corner in board.corners]) + ball.radius
+    x_max = max([corner[0] for corner in board.corners]) - ball.radius
+    y_min = min([corner[1] for corner in board.corners]) + ball.radius
+    y_max = max([corner[1] for corner in board.corners]) - ball.radius
+
+    return pos_virt[0] < x_min, pos_virt[1] > y_max, pos_virt[0] > x_max, pos_virt[1] < y_min
+
 
 def update_real_pool(pool,deltaT,epsilon = 0.01):
     #initialisation de l'update
@@ -212,12 +376,29 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
     # detection de chocs
     potential_collisions = collision_matrix(naive_pool.balls,number_of_balls)
     if detection_of_collision(potential_collisions,number_of_balls): 
+
         t_0 = first_impact_time(pool,potential_collisions,number_of_balls,epsilon) #on extrait le moment du premier choc
         update_balls(pool,t_0,number_of_balls) #on update les boules au moments du premier choc
         packs = Packed_balls(pool.balls,number_of_balls,epsilon)
-        print(packs.packs)
-        collision_update_speed(pool,number_of_balls,packs)
-        print(pool)
+        update_speed_collision(pool,number_of_balls,packs)
+        for ball in balls.values():
+            bounce_status = detect(pool.board, ball, deltaT)
+            new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
+            ball.update_position(new_pos)
+            ball.update_speed(new_speed)
+        update_real_pool(pool,deltaT-t_0,epsilon)
+        print("..........................................................................................................")
+        print("update intermediaire",pool)
+
+    else :
+        print('ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo')
+        for ball in balls.values():
+            bounce_status = detect(pool.board, ball, deltaT)
+            new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
+            ball.update_position(new_pos)
+            ball.update_speed(new_speed)
+    print("fin de l'itération",pool)
+
 
 
 
@@ -259,16 +440,26 @@ print(orientation_vector(ball1,ball2))
 '''
 
 billard2 = objet.Pool(3)
+billard2.board.set_size(15,15)
 ball0 = billard2.balls[0]
 ball1 = billard2.balls[1]
 ball2 = billard2.balls[2]
 for i in range(3):
-    billard2.balls[i].update_position(np.array([3*i,0]))
+    billard2.balls[i].update_position(np.array([4*i+1,1]))
 billard2.balls[0].update_speed(np.array([1,0]))
+#billard2.balls[2].update_speed(np.array([-1,0]))
 ball0 = billard2.balls[0]
 ball1 = billard2.balls[1]
 ball2 = billard2.balls[2]
-update_real_pool(billard2,1.1)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
+update_real_pool(billard2,3)
 '''
 new_position = ball1.position - np.array([1,0])
 billard2.balls[1].update_position(new_position)
@@ -286,3 +477,4 @@ print(impact_time(ball1,ball0,0.001))
 print(billard2.number_of_balls)
 billard2.balls[1].update_speed(np.array([1,0]))
 update_real_pool(billard2,0.99)'''
+
