@@ -64,17 +64,15 @@ class InputFrame(ttk.Frame):
         frame1 = ttk.Labelframe(self, text="Paramètres du billard")
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
         frame2 = ttk.Labelframe(self, text="Paramètres de frappe")
-        frame2.grid(column=0, row=7, columnspan=2, sticky="WE")
+        frame2.grid(column=0, row=4, columnspan=2, sticky="WE")
         frame3 = ttk.Labelframe(self, text="Paramètres d'animation")
-        frame3.grid(column=0, row=9, columnspan=2, sticky="WE")
+        frame3.grid(column=0, row=6, columnspan=2, sticky="WE")
         # Création des labels descriptifs des entrées
         ttk.Label(frame1, text="Type de billard choisi :").grid(column=0, row=0)
-        ttk.Label(frame1, text="Masse des boules :").grid(column=0, row=4)
-        ttk.Label(frame1, text="Rayon des boules :").grid(column=0, row=5)
-        ttk.Label(frame1, text="Longueur/largeur de la table :").grid(column=0, row=6)
-        ttk.Label(frame2, text="Angle de frappe :").grid(column=0, row=7)
-        ttk.Label(frame2, text="Force de frappe :").grid(column=0, row=8)
-        ttk.Label(frame3, text="Pas de temps :").grid(column=0, row=9)
+        ttk.Label(frame1, text="Masse des boules (en kg) :").grid(column=0, row=3)
+        ttk.Label(frame2, text="Angle de frappe (en °) :").grid(column=0, row=5)
+        ttk.Label(frame2, text="Force de frappe (en %) :").grid(column=0, row=6)
+        ttk.Label(frame3, text="Pas de temps (en s) :").grid(column=0, row=7)
 
         # Création des entrées
         self.choix = tk.IntVar()
@@ -90,61 +88,49 @@ class InputFrame(ttk.Frame):
         self.choix2_entry.grid(column=1, row=1)
         self.choix3_entry = ttk.Radiobutton(frame1, text="Anglais", variable=self.choix, value=3)
         self.choix3_entry.grid(column=1, row=2)
-        self.choix4_entry = ttk.Radiobutton(frame1, text="Personnalisé", variable=self.choix, value=4)
-        self.choix4_entry.grid(column=1, row=3)
         self.masse_entry = ttk.Entry(frame1)
-        self.masse_entry.grid(column=1, row=4)
+        self.masse_entry.grid(column=1, row=3)
         self.masse_entry.insert(0, self.balls[0].mass)
-        self.rayon_entry = ttk.Entry(frame1)
-        self.rayon_entry.grid(column=1, row=5)
-        self.rayon_entry.insert(0, self.balls[0].radius)
-        self.length_entry = ttk.Entry(frame1, text="Longueur :")
-        self.length_entry.grid(column=1, row=6)
-        self.length_entry.insert(0, self.board.length)
-        self.width_entry = ttk.Entry(frame1, text="Largeur")
-        self.width_entry.grid(column=2, row=6)
-        self.width_entry.insert(0, self.board.width)
+        self.validate_button = tk.Button(frame1, text="Valider paramètres", activebackground="green", fg="green", command=valider)
+        self.validate_button.grid(column=0, row=4, columnspan=2,)
 
         self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90, resolution=1)
-        self.angle_entry.grid(column=1, row=7)
+        self.angle_entry.grid(column=1, row=5)
         self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25, resolution=1)
-        self.force_entry.grid(column=1, row=8)
+        self.force_entry.grid(column=1, row=6)
         
         self.deltaT_entry = ttk.Entry(frame3)
-        self.deltaT_entry.grid(column=1, row=9)
+        self.deltaT_entry.grid(column=1, row=7)
         
-        self.validate_button = tk.Button(self, text="Valider", activebackground="green", fg="green", command=valider)
-        self.validate_button.grid(column=1, row=10)
+        
     
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
-        # Disjonction des cas pour le choix du type de billard
+        # Récupération des valeurs
+        masse = float(self.masse_entry.get())
+        angle = float(self.angle_entry.get())
+        force = float(self.force_entry.get())
+        deltaT = float(self.deltaT_entry.get())
+        # Création d'un nouveau billard pour afficher la prochaine frame (avec disjonction des cas)
         if self.choix==1 :
+            # On appelle la fonction de mise en place du billard (ajoutée une fois créée)
             self.n_ball = 3
         elif self.choix==2 :
+            # On appelle la fonction de mise en place du billard (ajoutée une fois créée)
             self.n_ball = 16
         elif self.choix==3 :
+            # On appelle la fonction de mise en place du billard (ajoutée une fois créée)
             self.n_ball = 16
         else :
             self.n_ball = 1
-        # Récupération des valeurs
-        masse = float(self.masse_entry.get())
-        rayon = float(self.rayon_entry.get())
-        length = float(self.length_entry.get())
-        width = float(self.width_entry.get())
-        angle = float(self.angle_entry.get())
-        force = float(self.force_entry.get())
         
-        billard = Pool(3)
+        billard = Pool(self.n_ball)
         for i in range(self.n_ball) :
             self.balls[i].mass = masse
-            self.balls[i].radius = rayon
-        self.board.length = length
-        self.board.width = width
         self.board.corners = self.board.get_corners()
         billard.balls = self.balls
         billard.board = self.board
-        update_pool(billard, 0)
+        update_pool(billard, deltaT)
 
 
 
