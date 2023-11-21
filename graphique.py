@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
+
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
@@ -17,23 +18,21 @@ def trace(billard, dynamic_func):
     fig = plt.figure("Billard Interactif Techniquement Exploitable")
     ax = fig.add_subplot()
     ax.set_aspect('equal')
+    # Affichage du billard vide sur le graphique
+    ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
+    ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
+    ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1],
+                                edgecolor="black", facecolor="#32a852", fill=True))
+    # Création d'un dictionnaire des boules et ajout sur le graphique
+    circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
+    for circle in circles.values():
+        ax.add_patch(circle)
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""
-        # Suppression de tous les patches pour pouvoir les réafficher ensuite
-        ax.patches = []
-        # Affichage du billard vide sur le graphique
-        ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
-        ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
-        ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1],
-                                   edgecolor="black", facecolor="#32a852", fill=True))
-        # Création d'un dictionnaire des boules et ajout sur le graphique
-        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
-        for circle in circles.values():
-            ax.add_patch(circle)
         # On appelle la fonction de mise à jour des positions des boules
         dynamic_func()
         for key in balls:
@@ -45,7 +44,3 @@ def trace(billard, dynamic_func):
     return fig, ani
 
 
-# import objet as o
-# import objet_game as og
-# animation = trace(og.Pool('anglais'), lambda: None)
-# plt.show()
