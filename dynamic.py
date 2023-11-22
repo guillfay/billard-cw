@@ -171,7 +171,7 @@ def bounce(pool,delta_t):
         new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
         if pool.type_billard!='francais':
             check_exit(pool,ball)
-        update_ball(ball,new_pos,new_speed)
+        update_ball(pool,ball,new_pos,new_speed)
 
 def update_pool(pool,delta_t,epsilon = 0.1):
     # iteration naïve sans interactions physiques
@@ -206,10 +206,10 @@ def check_exit(pool,ball):
         if linalg.norm(pos-pockets[j])<3*ball.radius:
             ball.update_state(False)
 
-def update_ball(ball,new_pos,new_speed):
+def update_ball(pool,ball,new_pos,new_speed):
     if ball.state==False:
         # ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
-        ball.update_position(np.array([0.1+1.8*ball.radius*ball.number,2.7]))
+        ball.update_position(np.array([0.1+1.8*ball.radius*ball.number,pool.board.length+0.1]))
         ball.update_speed(np.array([0,0]))
         if ball.number==0:
             print("FIN DE PARTIE")

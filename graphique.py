@@ -34,7 +34,7 @@ def trace(billard, dynamic_func,angle):
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
-    count_text = ax.text(0.75, 2.7, "Hors-jeu", ha='center', va='center', fontsize=6, color='blue')
+    ax.text(0.1, board.length+0.2, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Ajouter du texte au milieu de la figure
     
     if balls[0].speed.any()==0:
