@@ -82,89 +82,92 @@ class Board:
 class Pool:
     def __init__(self, type_billard):
         self.type_billard = type_billard
-        if type_billard == 'anglais':
-            number_of_balls = 16
-            length, width = 2.14, 1.22
-            radius = 0.0262
-            mass = 0.140
+        match type_billard:
+            case 'anglais':
+                number_of_balls = 16
+                length, width = 2.14, 1.22
+                radius = 0.0262
+                mass = 0.140
 
-            def construct_liste_pos():
-                liste_pos = []
-                pos_b = [width / 2, 0.425]
-                liste_pos.append(pos_b)
-                x1, y1 = width / 2, length - 0.495
-                pos_1 = [x1, y1]
-                liste_pos.append(pos_1)
-                eps = radius / 100
-                for k in range(2, 4):
-                    y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(4, 7):
-                    y = y1 + 2 * eps + 4 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 4 * eps - 4 * radius * np.sin(30 * np.pi / 180) + k % 4 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(7, 11):
-                    y = y1 + 3 * eps + 6 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 6 * eps - 6 * radius * np.sin(30 * np.pi / 180) + k % 7 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(11, 16):
-                    y = y1 + 4 * eps + 8 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 8 * eps - 8 * radius * np.sin(30 * np.pi / 180) + k % 11 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                return liste_pos
+                def construct_liste_pos():
+                    liste_pos = []
+                    pos_b = [width / 2, 0.425]
+                    liste_pos.append(pos_b)
+                    x1, y1 = width / 2, length - 0.495
+                    pos_1 = [x1, y1]
+                    liste_pos.append(pos_1)
+                    eps = radius / 100
+                    for k in range(2, 4):
+                        y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(4, 7):
+                        y = y1 + 2 * eps + 4 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 4 * eps - 4 * radius * np.sin(30 * np.pi / 180) + k % 4 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(7, 11):
+                        y = y1 + 3 * eps + 6 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 6 * eps - 6 * radius * np.sin(30 * np.pi / 180) + k % 7 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(11, 16):
+                        y = y1 + 4 * eps + 8 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 8 * eps - 8 * radius * np.sin(30 * np.pi / 180) + k % 11 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    return liste_pos
 
-            liste_pos = construct_liste_pos()
-            liste_color = ['w', 'r', 'r', 'y', 'y', 'k', 'r', 'r', 'y', 'r', 'y', 'y', 'r', 'y', 'y', 'r']
-        if type_billard == 'americain':
-            number_of_balls = 16
-            length, width = 2.54, 1.27
-            radius = 0.0286
-            mass = 0.162
+                liste_pos = construct_liste_pos()
+                liste_color = ['w', 'r', 'r', 'y', 'y', 'k', 'r', 'r', 'y', 'r', 'y', 'y', 'r', 'y', 'y', 'r']
+            case 'americain':
+                number_of_balls = 16
+                length, width = 2.54, 1.27
+                radius = 0.0286
+                mass = 0.162
 
-            def construct_liste_pos():
-                liste_pos = []
-                pos_b = [width / 2, length / 4]
-                liste_pos.append(pos_b)
-                x1, y1 = width / 2, length * 3 / 4
-                pos_1 = [x1, y1]
-                liste_pos.append(pos_1)
-                eps = radius / 100
-                for k in range(2, 4):
-                    y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(4, 7):
-                    y = y1 + 2 * eps + 4 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 4 * eps - 4 * radius * np.sin(30 * np.pi / 180) + k % 4 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(7, 11):
-                    y = y1 + 3 * eps + 6 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 6 * eps - 6 * radius * np.sin(30 * np.pi / 180) + k % 7 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                for k in range(11, 16):
-                    y = y1 + 4 * eps + 8 * radius * np.cos(30 * np.pi / 180)
-                    x = x1 - 8 * eps - 8 * radius * np.sin(30 * np.pi / 180) + k % 11 * 2 * (radius + eps)
-                    liste_pos.append([x, y])
-                return liste_pos
+                def construct_liste_pos():
+                    liste_pos = []
+                    pos_b = [width / 2, length / 4]
+                    liste_pos.append(pos_b)
+                    x1, y1 = width / 2, length * 3 / 4
+                    pos_1 = [x1, y1]
+                    liste_pos.append(pos_1)
+                    eps = radius / 100
+                    for k in range(2, 4):
+                        y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(4, 7):
+                        y = y1 + 2 * eps + 4 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 4 * eps - 4 * radius * np.sin(30 * np.pi / 180) + k % 4 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(7, 11):
+                        y = y1 + 3 * eps + 6 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 6 * eps - 6 * radius * np.sin(30 * np.pi / 180) + k % 7 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    for k in range(11, 16):
+                        y = y1 + 4 * eps + 8 * radius * np.cos(30 * np.pi / 180)
+                        x = x1 - 8 * eps - 8 * radius * np.sin(30 * np.pi / 180) + k % 11 * 2 * (radius + eps)
+                        liste_pos.append([x, y])
+                    return liste_pos
 
-            liste_pos = construct_liste_pos()
-            liste_color = ['w', 'y', 'b', 'r', 'purple', 'orange', 'g', 'brown', 'k', 'y', 'b', 'r', 'purple', 'orange',
-                           'g', 'brown']
-        if type_billard == 'francais':
-            number_of_balls = 3
-            length, width = 3.1, 1.68
-            radius = 0.0305
-            mass = 0.210
+                liste_pos = construct_liste_pos()
+                liste_color = ['w', 'y', 'b', 'r', 'purple', 'orange', 'g', 'brown', 'k', 'y', 'b', 'r', 'purple',
+                               'orange', 'g', 'brown']
+            case 'francais':
+                number_of_balls = 3
+                length, width = 3.1, 1.68
+                radius = 0.0305
+                mass = 0.210
 
-            def construct_liste_pos():
-                pos_b = np.array([width / 2, length / 4])
-                pos_1 = np.array([width / 2 - 0.1825, length * 3 / 4])
-                pos_2 = np.array([width / 2, length * 3 / 4])
-                return [pos_b, pos_1, pos_2]
+                def construct_liste_pos():
+                    pos_b = np.array([width / 2, length / 4])
+                    pos_1 = np.array([width / 2 - 0.1825, length * 3 / 4])
+                    pos_2 = np.array([width / 2, length * 3 / 4])
+                    return [pos_b, pos_1, pos_2]
 
-            liste_pos = construct_liste_pos()
-            liste_color = ['r', 'w', 'w']
+                liste_pos = construct_liste_pos()
+                liste_color = ['r', 'w', 'w']
+            case _:
+                raise Exception("Billard '" + str(type_billard) + "' non géré")
 
         self.board = Board(length=length, width=width)
         self.balls = {}
