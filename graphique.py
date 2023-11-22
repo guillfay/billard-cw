@@ -35,6 +35,12 @@ def trace(billard, dynamic_func,angle):
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
+    # Ajouter du texte au milieu de la figure
+    text = "Hello, Matplotlib!"
+    text_x = 1.5  # Coordonnée x du texte
+    text_y = .5  # Coordonnée y du texte
+    ax.text(text_x, text_y, text, ha='center', va='center', fontsize=12, color='blue')
+
     if balls[0].speed.any()==0:
         queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
         cx, cy = queue.get_xy()
