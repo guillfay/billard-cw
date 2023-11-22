@@ -1,3 +1,5 @@
+import numpy as np
+
 def update_pool(pool, deltaT):
     # version initiale sans rebond et sans interactions entre les boules et sans frottements
     balls = pool.balls
@@ -53,6 +55,53 @@ def rebond(board, ball, dt, bounce_status):
         speed_reel = speed_reel * np.array([1, -1])
 
     return pos_reel, speed_reel
+
+def distance(ball1,ball2):
+    position_vector1 = ball1.position
+    position_vector2 = ball2.position
+    return np.sqrt((position_vector1[0]-position_vector2[0])**2+(position_vector1[1]-position_vector2[1])**2)
+
+def norm(vector):
+    return np.sqrt(vector[0]**2+vector[1]**2)
+
+def scalar_product(vector1,vector2):
+    return vector1[0]*vector2[0] + vector1[1]*vector1[1]
+
+def collided(ball1,ball2):
+    if distance(ball1,ball2) < ball1.radius + ball2.radius : 
+        return True
+    else :
+        return False
+
+def impact_time(ball1,ball2,epsilon):
+    square_radius = (ball1.radius+ball2.radius+epsilon)**2
+    Delta_Vx = ball2.speed[0] - ball1.speed[0]
+    Delta_Vy = ball2.speed[1] - ball1.speed[1]
+    Delta_X =  ball2.position[0] - ball1.position[0]
+    Delta_Y =  ball2.position[1] - ball1.position[1]
+    a = Delta_Vx**2 + Delta_Vy**2
+    b = 2*Delta_X*Delta_Vx + 2*Delta_Y*Delta_Vy
+    c = Delta_X**2 + Delta_Y**2 - square_radius
+    if a == 0 :
+        sol1 = -c/b
+        sol2 = sol1
+    else :
+        Delta = b**2 - 4*a*c
+        sqrt_delta = np.sqrt(Delta)
+        sol1 = (-b+sqrt_delta)/(2*a)
+        sol2 = (-b-sqrt_delta)/(2*a)
+    sol1 = max(0,sol1)
+    sol2 = max(0,sol2) 
+    return min(sol1,sol2) #on garde la plus petite solution positive
+
+def collision_matrix(balls,number_of_balls):
+    # le deuxieme argument correspond au nombre de boules
+    matrix = np.zeros((number_of_balls,number_of_balls))
+    for i in range(number_of_balls):
+        for j in range(i,number_of_balls):
+            matrix[i][j] = collided(balls[i],balls[j])
+            matrix[j][i] = matrix[i][j]
+    return matrix>0
 
 
 """from objet import *
