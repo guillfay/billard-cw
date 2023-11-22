@@ -11,9 +11,9 @@ def collided(ball1,ball2):
         return False
    
 def collision_matrix(pool): 
-    #Crée une matrice de booléen telle que matrix[i][j]
+    '''Crée une matrice de booléen telle que matrix[i][j]
     #est True si les boules i et j s'entrechoquent
-    #False sinon
+    False sinon'''
     balls = pool.balls
     number_of_balls = pool.number_of_balls
     matrix = np.zeros((number_of_balls,number_of_balls))
