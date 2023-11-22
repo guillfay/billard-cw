@@ -1,5 +1,4 @@
 import objet as objet
-import dynamic as dynamic
 import numpy as np
 import copy 
 
