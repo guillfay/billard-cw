@@ -91,10 +91,10 @@ class InputFrame(ttk.Frame):
                                          command=valider)
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
-        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90,
+        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=180, tickinterval=90,
                                     resolution=1, command=angle)
         self.angle_entry.grid(column=1, row=5)
-        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25,
+        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=180, tickinterval=25,
                                     resolution=1)
         self.force_entry.grid(column=1, row=6)
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
