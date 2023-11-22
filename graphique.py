@@ -24,12 +24,9 @@ def trace(billard, dynamic_func):
     ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1],
                                edgecolor="black", facecolor="#32a852", fill=True))
     # Création des trous
-    if billard.type!='francais':
-        for k in range(len(board.corners)):
-            print(board.corners)
-            ax.add_patch(plt.Circle(tuple(board.corners[k]),radius=balls[0].radius, color='k'))
-        ax.add_patch(plt.Circle((board.corners[0][0],board.corners[1][1]/2),radius=balls[0].radius, color='k'))
-        ax.add_patch(plt.Circle((board.corners[2][0],board.corners[2][1]/2),radius=balls[0].radius, color='k'))
+    if billard.type_billard != 'francais':
+        for pocket in billard.board.get_pockets():
+            ax.add_patch(plt.Circle(tuple(pocket),radius=balls[0].radius, color='k'))
     # Création d'un dictionnaire des boules et ajout sur le graphique
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
