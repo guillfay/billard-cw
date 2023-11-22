@@ -14,20 +14,20 @@ from dynamic import *
 class GraphFrame(ttk.Frame):
     """Classe permettant de générer la partie graphique de la fenêtre"""
 
-    def __init__(self, master, billard, dynamic_func):
+    def __init__(self, master, billard, dynamic_func, angle=0):
         super().__init__(master)
         self.widget = None
         self.master = master
-        self.draw_canvas(billard, dynamic_func)
+        self.draw_canvas(billard, dynamic_func, angle)
 
-    def draw_canvas(self, billard, dynamic_func):
+    def draw_canvas(self, billard, dynamic_func, angle):
         """Méthode pour recréer un canvas pour l'affichage d'un billard dans une fenêtre Tkinter"""
         # On enlève les anciens widgets
         if self.widget:
             self.widget.destroy()
         # On appelle l'animation donnée par la fonction trace de graphique.py
         # Il nous faut conserver l'objet ani pour que l'animation continue de se faire.
-        self.fig, self.ani = trace(billard, dynamic_func)
+        self.fig, self.ani = trace(billard, dynamic_func, angle)
         # On génère le canvas
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.master)
         self.widget = self.canvas.get_tk_widget()
@@ -75,6 +75,7 @@ class InputFrame(ttk.Frame):
         # Création des entrées
         self.choix = tk.IntVar()
         self.choix.set(1)
+        self.billard = billard
         self.balls = billard.balls
 
         self.choix1_entry = ttk.Radiobutton(frame1, text="Français", variable=self.choix, value=1)
@@ -98,6 +99,8 @@ class InputFrame(ttk.Frame):
         self.force_entry.grid(column=1, row=6)
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
+        
+        self.angle = float(self.angle_entry.get())
 
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
@@ -118,7 +121,7 @@ class InputFrame(ttk.Frame):
         self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
         
     def angle_test(self, angle):
-        return angle
+        self.change_pool_func(self.billard, float(angle))
 
 class App(tk.Tk):
     """Classe permettant de lancer l'affichage"""
@@ -136,25 +139,26 @@ class App(tk.Tk):
         # Initialisation du billard
         self.billard = Pool("francais")
         self.queue = Cue(0.2)
-
+        self.angle = 0
+        
         self.__create_widgets()
 
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
         partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
-        self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
+        self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.angle)
         self.grap_frame.grid(column=0, row=0)
 
         # Création de la partie configuration
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
-    def change_pool_on_input(self, billard):
+    def change_pool_on_input(self, billard, angle=0):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
         partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
-        self.grap_frame.draw_canvas(self.billard, partial_update_pool)
+        self.grap_frame.draw_canvas(self.billard, partial_update_pool, angle)
 
     def tirer(self, energie, angle):
         """Fonction permettant d'effectuer un tir"""

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.transforms import Affine2D
 from matplotlib.animation import FuncAnimation
 
 
@@ -7,7 +8,7 @@ from matplotlib.animation import FuncAnimation
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard, dynamic_func):
+def trace(billard, dynamic_func, angle):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -39,13 +40,16 @@ def trace(billard, dynamic_func):
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
     def update(frame):
-        """Fonction mettant à jour la position des boules"""
+        """Fonction mettant à jour la position des boules et de la queue"""
         # On appelle la fonction de mise à jour des positions des boules
         dynamic_func()
         for key in balls:
             circles[key].set_center(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
-        return circles, frame_text
+        queue.set_xy((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]))
+        transform = Affine2D().rotate_deg_around(billard.balls[0].position[0], billard.balls[0].position[1], -angle) + ax.transData
+        queue.set_transform(transform)
+        return circles, frame_text, queue
 
     ani = FuncAnimation(fig, update, interval=1000 / 60, cache_frame_data=False)
     return fig, ani
