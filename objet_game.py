@@ -77,6 +77,7 @@ class Board:
 class Pool:
     def __init__(self, type):
         if type == 'anglais':
+            self.type=type
             number_of_balls = 16
             length, width = 2.14, 1.22
             radius = 0.0262
@@ -110,6 +111,7 @@ class Pool:
             liste_color=['w','r','r','y','y','k','r','r','y','r','y','y','r','y','y','r']
             
         if type == 'americain':
+            self.type=type
             number_of_balls = 16
             length, width = 2.54, 1.27
             radius = 0.0286
@@ -141,7 +143,8 @@ class Pool:
                 return liste_pos
             liste_pos = construct_liste_pos()
             liste_color = ['w','y','b','r','purple','orange','g','brown','k','y','b','r','purple','orange','g','brown']
-        if type == 'francais':  
+        if type == 'francais':
+            self.type=type  
             number_of_balls = 3
             length, width = 3.1, 1.68
             radius = 0.0305
