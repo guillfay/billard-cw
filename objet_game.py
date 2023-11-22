@@ -185,7 +185,7 @@ class Pool:
 class Cue:
     def __init__(self, mass, angle=0):
         self.mass = mass
-        self.angle=angle
+        self.angle = angle
 
     def frappe(self, energie, angle, ball):
         """Energie en J, angle en rad par rapport à l'axe x"""

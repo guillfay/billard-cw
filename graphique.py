@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.transforms import Affine2D
+from matplotlib.transforms import Affine2D
 from matplotlib.animation import FuncAnimation
+from objet_game import *
 from objet_game import *
 
 
@@ -9,7 +11,7 @@ from objet_game import *
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard, dynamic_func,queue):
+def trace(billard, dynamic_func, queue):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -40,12 +42,9 @@ def trace(billard, dynamic_func,queue):
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
-
-    # Ajouter du texte au milieu de la figure
     
-
     def update(frame):
-        """Fonction mettant à jour la position des boules"""
+        """Fonction mettant à jour la position des boules et de la queue"""
         # On appelle la fonction de mise à jour des positions des boules
         dynamic_func()
         for key in balls:

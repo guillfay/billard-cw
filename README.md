@@ -42,7 +42,7 @@ pip install -r requirements.txt
     - :heavy_check_mark: Fonctionnalité 4 : modélisation les interactions entre la boule et le bord de la table de billard (rebonds)
     - :heavy_check_mark: Fonctionnalité 5 : Mise à jour de la position des boules en fonction de la vitesse
 - **:white_check_mark: Sprint 3 : mise en place des interactions entre les boules**
-    - Fonctionnalité 6 : modélisation du choc entre les boules
+    - :heavy_check_mark: Fonctionnalité 6 : modélisation du choc entre les boules
     - :heavy_check_mark: Fonctionnalité 7 : modélisation des frottements avec le tapis
 - **:white_check_mark: Sprint 4 : Paramétrer la simulation depuis une ligne de commande**
     - :heavy_check_mark: Fonctionnalité 8 : utilisation du module argparse

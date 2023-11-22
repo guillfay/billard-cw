@@ -8,8 +8,9 @@ from dynamic import *
 
 
 
+
 # --------------------------------------------------------------------------------------------
-# --------------------------------------FONCTIONNALITE 7--------------------------------------
+# --------------------------------------FONCTIONNALITE 13-------------------------------------
 # --------------------------------------------------------------------------------------------
 
 class GraphFrame(ttk.Frame):
@@ -36,6 +37,7 @@ class GraphFrame(ttk.Frame):
         self.canvas.draw()
 
 
+
 class InputFrame(ttk.Frame):
     """Classe permettant de générer la partie configuration de la fenêtre"""
 
@@ -54,7 +56,7 @@ class InputFrame(ttk.Frame):
         self.change_pool_func = change_pool_func
         self.__create_widgets(self.valider, billard)
         self.app_tirer_func = tirer_func
-        self.app_angle_func=angle_func
+        self.app_angle_func = angle_func
 
     def __create_widgets(self, valider, billard):
         # Création des Labelframe groupant les entrées
@@ -62,14 +64,11 @@ class InputFrame(ttk.Frame):
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
         frame2 = ttk.Labelframe(self, text="Paramètres de frappe")
         frame2.grid(column=0, row=4, columnspan=2, sticky="WE")
-        frame3 = ttk.Labelframe(self, text="Paramètres d'animation")
-        frame3.grid(column=0, row=6, columnspan=2, sticky="WE")
         # Création des labels descriptifs des entrées
         ttk.Label(frame1, text="Type de billard choisi :").grid(column=0, row=0)
         ttk.Label(frame1, text="Masse des boules (en kg) :").grid(column=0, row=3)
         ttk.Label(frame2, text="Angle de frappe (en °) :").grid(column=0, row=5)
         ttk.Label(frame2, text="Force de frappe (en %) :").grid(column=0, row=6)
-        ttk.Label(frame3, text="Pas de temps (en s) :").grid(column=0, row=8)
 
         # Création des entrées
         self.choix = tk.IntVar()
@@ -89,19 +88,17 @@ class InputFrame(ttk.Frame):
                                          command=valider)
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
-        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90,
-                                    resolution=1, command=self.angle_test)
+        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=180, tickinterval=90, command=self.angle_test)
         self.angle_entry.grid(column=1, row=5)
-        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25,
+        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=180, tickinterval=25,
                                     resolution=1)
         self.force_entry.grid(column=1, row=6)
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
-
-        self.deltaT_entry = ttk.Entry(frame3)
-        self.deltaT_entry.grid(column=1, row=8)
-
+        
         self.angle = float(self.angle_entry.get())
+
+
 
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
@@ -116,6 +113,7 @@ class InputFrame(ttk.Frame):
                 new_billard = Pool("anglais")
             case _:
                 raise Exception("problème avec la valeur de <choix>")
+        self.change_pool_func(new_billard, Cue(0.2))
         self.change_pool_func(new_billard, Cue(0.2))
 
     def tirer(self):
@@ -177,6 +175,7 @@ class App(tk.Tk):
         Permet de correctement gérer le clic sur le bouton de fermeture de la fenêtre"""
         self.quit()
         self.destroy()
+
 
 
 if __name__ == "__main__":
