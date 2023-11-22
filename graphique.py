@@ -13,7 +13,6 @@ def trace(billard, dynamic_func):
     # Valeurs récupérées dans un objet billard de la classe Pool
     board = billard.board
     balls = billard.balls
-    print(board)
     # Initialisation de la figure contenant l'animation
     fig = plt.figure("Billard Interactif Techniquement Exploitable")
     ax = fig.add_subplot()

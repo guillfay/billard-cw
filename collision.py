@@ -165,7 +165,8 @@ def first_impact(pool,potential_collisions,number_of_balls,epsilon):
                 matrix[i][j] = np.inf
             matrix[j][i] = matrix[i][j]
     index = np.array(np.unravel_index(np.argmin(matrix), matrix.shape))
-    return np.argmin(matrix),index
+
+    return np.min(matrix),index
 
 def update_balls(pool,deltaT,number_of_balls):
     for i in range(number_of_balls):
@@ -390,6 +391,8 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
     potential_collisions = collision_matrix(naive_pool.balls,number_of_balls)
     if detection_of_collision(potential_collisions,number_of_balls): #Verifie qu'il y a un True dans la matrice
         t_0, collided_balls = first_impact(pool,potential_collisions,number_of_balls,epsilon) #on extrait le moment du premier choc
+        print("t_0=",t_0)
+        print("deltaT=",deltaT)
         if t_0 < deltaT:
             update_balls(pool,t_0,number_of_balls) #on update les boules au moments du premier choc
             #packs = Packed_balls(pool.balls,number_of_balls,epsilon)
@@ -403,13 +406,15 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
                 ball.update_speed(new_speed)
             if t_0 != 0 :
                 update_real_pool(pool,deltaT-t_0,epsilon)
-                
+        update_balls(pool,deltaT,number_of_balls)
+        
     else :
         for ball in balls.values():
             bounce_status = detect(pool.board, ball, deltaT)
             new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
             ball.update_position(new_pos)
             ball.update_speed(new_speed)
+    
 
 
 

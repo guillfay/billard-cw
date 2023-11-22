@@ -36,18 +36,31 @@ print(orientation_vector(ball1,ball2))
 #paquets = Packed_balls(billard.balls,8,0.1)
 '''
 
-billard2 = objet.Pool(2,15,15)
+
+#ca marche cas simple
+
+billard2 = objet.Pool(3,15,15)
 ball0 = billard2.balls[0]
 ball1 = billard2.balls[1]
 #ball2 = billard2.balls[2]
-for i in range(2):
+for i in range(3):
     billard2.balls[i].update_position(np.array([4*i+1,1]))
 billard2.balls[0].update_speed(np.array([1,0]))
-#billard2.balls[2].update_speed(np.array([-1,0]))
+billard2.balls[2].update_speed(np.array([-1,0]))
+ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.1,0.01))
+plt.show()
+'''
+billard2 = objet.Pool(2,15,15)
+ball0 = billard2.balls[0]
+ball1 = billard2.balls[1]
+#for i in range(3):
+
+billard2.balls[0].update_speed(np.array([1,0]))
+billard2.balls[0].update_position(np.array([2,2]))
+billard2.balls[1].update_position(np.array([6,3.5]))
 ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.1,0.01))
 plt.show()
 
-'''
 new_position = ball1.position - np.array([1,0])
 billard2.balls[1].update_position(new_position)
 new_speed = ball1.speed - np.array([1,0])
