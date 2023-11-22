@@ -46,7 +46,7 @@ def norm(vector):
     return np.sqrt(vector[0]**2+vector[1]**2)
 
 def scalar_product(vector1,vector2):
-    return vector1[0]*vector2[0] + vector1[1]*vector1[1]
+    return vector1[0]*vector2[0] + vector1[1]*vector2[1]
 
 def scalar(vec1, vec2):
     return np.dot(vec1, vec2)
@@ -353,20 +353,44 @@ def detect(board, ball, dt):
 
     return pos_virt[0] < x_min, pos_virt[1] > y_max, pos_virt[0] > x_max, pos_virt[1] < y_min
 
-def update_speed_2collidedBalls(pool,index):
-    print("yoyoyooyyoyooyyy",index)
-    ball0 = pool.balls[index[0]]
-    ball1 = pool.balls[index[1]]
-    vec_refto1 = ball1.position - ball0.position
-    print(vec_refto1)
-    vec_refto1 = vec_refto1 / norm(vec_refto1)
-    deltaV_1 = scalar_product(ball0.speed-ball1.speed, vec_refto1) * vec_refto1
-    deltaV_0 = - deltaV_1
-    print("yeyeyeyeyyeyeyy",deltaV_0)
-    new_speed0 = ball0.speed + deltaV_0
-    new_speed1 = ball1.speed + deltaV_1
+def update_speed_2collidedBalls5(pool,index):
+    deltaV_1 = 0
+    deltaV_0 = 0
+    v_0 = pool.balls[index[0]].speed
+    v_1 = pool.balls[index[1]].speed
+    u_0to1 = ball1.position-ball0.position
+    u_0to1 = u_0to1 / norm(u_0to1)
+    print(u_0to1)
+    u_0to1_T = np.array([-u_0to1[1],u_0to1[0]])
+    deltaV_1 = np.dot(v_0, u_0to1) * u_0to1
+    deltaV_0 = -np.dot(v_0, u_0to1_T) * u_0to1_T
+    u_1to0 = -u_0to1
+    u_1to0_T = -u_0to1_T
+    deltaV_0 += np.dot(v_1, u_1to0) * u_1to0
+    deltaV_1 += -np.dot(v_1, u_1to0_T) * u_1to0_T
+    new_speed0 = deltaV_0
+    new_speed1 = deltaV_1
     pool.balls[index[0]].update_speed(new_speed0)
     pool.balls[index[1]].update_speed(new_speed1)
+
+def update_speed_2collidedBalls(pool,index):
+    ball1 = pool.balls[index[0]]
+    ball2 = pool.balls[index[1]]
+    vec_1to2 = ball2.position - ball1.position
+    vec_1to2 = vec_1to2 / norm(vec_1to2)
+    deltaV = scalar_product(ball1.speed+ball2.speed, vec_1to2)
+    if deltaV >= 0:
+        deltaV_2 = np.sqrt(norme(ball1.speed) **2 + norme(ball2.speed) **2 - norme(ball1.speed - scalar_product(ball1.speed, vec_1to2) * vec_1to2) **2 - norme(ball2.speed - scalar_product(ball2.speed, vec_1to2) * vec_1to2) **2) * vec_1to2 - scalar_product(ball2.speed, vec_1to2) * vec_1to2
+        deltaV_1 = - scalar_product(ball1.speed, vec_1to2) * vec_1to2
+    else:
+        deltaV_1 = np.sqrt(norme(ball1.speed) **2 + norme(ball2.speed) **2 - norme(ball1.speed - scalar_product(ball1.speed, vec_1to2) * vec_1to2) **2 - norme(ball2.speed - scalar_product(ball2.speed, vec_1to2) * vec_1to2) **2) * (-vec_1to2) - scalar_product(ball1.speed, vec_1to2) * vec_1to2
+        deltaV_2 = - scalar_product(ball2.speed, vec_1to2) * vec_1to2
+    new_speed1 = ball1.speed + deltaV_1
+    new_speed2 = ball2.speed + deltaV_2
+    pool.balls[index[0]].update_speed(new_speed1)
+    pool.balls[index[1]].update_speed(new_speed2)
+
+
 
 def detection_of_collision(potential_collisions,number_of_balls):
     for i in range(number_of_balls):
@@ -374,6 +398,19 @@ def detection_of_collision(potential_collisions,number_of_balls):
             if potential_collisions[i][j] :
                 return True
     return False
+
+def friction(pool,deltaT,alpha=0.95,v_min=0.01):
+    balls = pool.balls 
+    number_of_balls = pool.number_of_balls
+    for i in range(number_of_balls):
+        if norm(balls[i].speed) < v_min :
+            balls[i].update_speed(np.array([0,0]))
+        else :
+            deltaV = deltaT*alpha*balls[i].speed/norm(balls[i].speed)
+            new_speed = balls[i].speed - deltaV
+            balls[i].update_speed(new_speed)
+
+
 
 
 def update_real_pool(pool,deltaT,epsilon = 0.01):
@@ -391,8 +428,6 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
     potential_collisions = collision_matrix(naive_pool.balls,number_of_balls)
     if detection_of_collision(potential_collisions,number_of_balls): #Verifie qu'il y a un True dans la matrice
         t_0, collided_balls = first_impact(pool,potential_collisions,number_of_balls,epsilon) #on extrait le moment du premier choc
-        print("t_0=",t_0)
-        print("deltaT=",deltaT)
         if t_0 < deltaT:
             update_balls(pool,t_0,number_of_balls) #on update les boules au moments du premier choc
             #packs = Packed_balls(pool.balls,number_of_balls,epsilon)
@@ -406,15 +441,17 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
                 ball.update_speed(new_speed)
             if t_0 != 0 :
                 update_real_pool(pool,deltaT-t_0,epsilon)
+        print(np.sum([np.linalg.norm(balls[i].speed)**2 for i in range(number_of_balls)]))
+
         update_balls(pool,deltaT,number_of_balls)
-        
+        friction(pool,deltaT,alpha=0.01,v_min=0.001)
     else :
         for ball in balls.values():
             bounce_status = detect(pool.board, ball, deltaT)
             new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
             ball.update_position(new_pos)
             ball.update_speed(new_speed)
-    
+        friction(pool,deltaT,alpha=0.01,v_min=0.001)
 
 
 
