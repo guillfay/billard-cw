@@ -1,5 +1,5 @@
 import numpy as np
-
+from objet_game import *
 
 def update_pool(pool, delta_t):
     # version initiale sans rebond et sans interactions entre les boules et sans frottements
@@ -7,9 +7,25 @@ def update_pool(pool, delta_t):
     for ball in balls.values():
         bounce_status = detect(pool.board, ball, delta_t)
         new_pos, new_speed = rebond(pool.board, ball, delta_t, bounce_status)
+        if pool.type_billard!='francais':
+            check_exit(pool,ball)
+        update_ball(ball,new_pos,new_speed)
+    
+def check_exit(pool,ball):
+    pos=ball.position
+    pockets=Board.get_pockets(pool.board)
+    for j in range(len(pockets)):
+        if linalg.norm(pos-pockets[j])<2*ball.radius:
+            ball.update_state(False)
+
+def update_ball(ball,new_pos,new_speed):
+    if ball.state==False:
+        ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
+        ball.update_speed(np.array([0,0]))
+        print("FIN DE PARTIE")
+    else:
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
-
 
 def detect(board, ball, dt):
     """Cette fonction prend en argument une table, une balle et l'incrément de temps.

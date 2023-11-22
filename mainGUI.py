@@ -27,7 +27,7 @@ class GraphFrame(ttk.Frame):
             self.widget.destroy()
         # On appelle l'animation donnée par la fonction trace de graphique.py
         # Il nous faut conserver l'objet ani pour que l'animation continue de se faire.
-        self.fig, self.ani = trace(billard, dynamic_func)
+        self.fig, self.ani = trace(billard, dynamic_func, angle=0)
         # On génère le canvas
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.master)
         self.widget = self.canvas.get_tk_widget()
@@ -147,6 +147,7 @@ class App(tk.Tk):
         # Création de la partie configuration
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
+        
 
     def change_pool_on_input(self, billard):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
@@ -157,6 +158,7 @@ class App(tk.Tk):
     def tirer(self, energie, angle):
         """Fonction permettant d'effectuer un tir"""
         self.queue.frappe(energie=energie / 100000000, angle=angle, ball=self.billard.balls[0])
+        
 
     def quit_me(self):
         """Je ne sais pas pourquoi il faut rajouter ça, mais ça marche.

@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
-
+import numpy as np
 
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard, dynamic_func):
+def trace(billard, dynamic_func,angle):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -35,8 +35,15 @@ def trace(billard, dynamic_func):
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
-    queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
-    ax.add_patch(queue)
+    if balls[0].speed.any()==0:
+        queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
+        cx, cy = queue.get_xy()
+        width = queue.get_width()
+        height = queue.get_height()
+        queue = patches.Rectangle(
+        (cx, cy), width, height, angle=angle, edgecolor='red', facecolor='none')
+        ax.add_patch(queue)
+    
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""
