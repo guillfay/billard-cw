@@ -58,13 +58,13 @@ def rebond(board, ball, dt, bounce_status):
     return pos_reel, speed_reel
 
 
-"""from objet import *
-from graphique import *
-from functools import partial
+# from objet import *
+# from graphique import *
+# from functools import partial
 
-my_pool = Pool(2)
-cue = Cue(0.5)
-cue.frappe(0.5, np.pi/3, my_pool.balls[0])
+# my_pool = Pool(2)
+# cue = Cue(0.5)
+# cue.frappe(0.5, np.pi/3, my_pool.balls[0])
 
-animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=1/60))
-plt.show()"""
+# animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=1/60))
+# plt.show()

@@ -120,8 +120,8 @@ class InputFrame(ttk.Frame):
 
     def tirer(self):
         """Fonction permettant d'effectuer un tir"""
-        1==1
-
+        C=Cue(0.2)
+        C.frappe(energie=self.force_entry.get()/100000000,angle=self.angle_entry.get(),ball=self.balls[0])
 
 
 class App(tk.Tk):
@@ -144,7 +144,7 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         On commence par donner des paramètres à update_pool"""
-        partial_update_pool = partial(update_pool, self.billard, 0)
+        partial_update_pool = partial(update_pool, self.billard, 1000/60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
@@ -154,7 +154,7 @@ class App(tk.Tk):
 
     def update_pool_input(self, billard):
         """Mise à jour de l'objet billard et recréation de l'animation"""
-        partial_update_pool = partial(update_pool, billard, 0)
+        partial_update_pool = partial(update_pool, billard, 1000/60)
         self.billard = update_pool(billard, 0.1)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
 

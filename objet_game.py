@@ -175,7 +175,7 @@ class Cue:
         """Energie en J, angle en rad par rapport à l'axe x"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
-        ball.update_speed(np.array([np.cos(angle) * v_ball, np.sin(angle) * v_ball]))
+        ball.update_speed(np.array([-np.sin(angle) * v_ball, np.cos(angle) * v_ball]))
 
 
 # billard = Pool('americain')

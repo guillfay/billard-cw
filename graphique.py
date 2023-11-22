@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
-
+import objet_game
 
 
 # --------------------------------------------------------------------------------------------
@@ -30,6 +31,9 @@ def trace(billard, dynamic_func):
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
+
+    queue=patches.Rectangle((billard.balls[0].position[0]-0.02/2,billard.balls[0].position[1]),0.02,-10)
+    ax.add_patch(queue)
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""
