@@ -357,25 +357,25 @@ def detect(board, ball, dt):
 
     return pos_virt[0] < x_min, pos_virt[1] > y_max, pos_virt[0] > x_max, pos_virt[1] < y_min
 
-def update_speed_2collidedBalls5(pool,index):
-    deltaV_1 = 0
-    deltaV_0 = 0
-    v_0 = pool.balls[index[0]].speed
-    v_1 = pool.balls[index[1]].speed
-    u_0to1 = ball1.position-ball0.position
-    u_0to1 = u_0to1 / norm(u_0to1)
-    print(u_0to1)
-    u_0to1_T = np.array([-u_0to1[1],u_0to1[0]])
-    deltaV_1 = np.dot(v_0, u_0to1) * u_0to1
-    deltaV_0 = -np.dot(v_0, u_0to1_T) * u_0to1_T
-    u_1to0 = -u_0to1
-    u_1to0_T = -u_0to1_T
-    deltaV_0 += np.dot(v_1, u_1to0) * u_1to0
-    deltaV_1 += -np.dot(v_1, u_1to0_T) * u_1to0_T
-    new_speed0 = deltaV_0
-    new_speed1 = deltaV_1
-    pool.balls[index[0]].update_speed(new_speed0)
-    pool.balls[index[1]].update_speed(new_speed1)
+# def update_speed_2collidedBalls5(pool,index):
+#     deltaV_1 = 0
+#     deltaV_0 = 0
+#     v_0 = pool.balls[index[0]].speed
+#     v_1 = pool.balls[index[1]].speed
+#     u_0to1 = ball1.position-ball0.position
+#     u_0to1 = u_0to1 / norm(u_0to1)
+#     print(u_0to1)
+#     u_0to1_T = np.array([-u_0to1[1],u_0to1[0]])
+#     deltaV_1 = np.dot(v_0, u_0to1) * u_0to1
+#     deltaV_0 = -np.dot(v_0, u_0to1_T) * u_0to1_T
+#     u_1to0 = -u_0to1
+#     u_1to0_T = -u_0to1_T
+#     deltaV_0 += np.dot(v_1, u_1to0) * u_1to0
+#     deltaV_1 += -np.dot(v_1, u_1to0_T) * u_1to0_T
+#     new_speed0 = deltaV_0
+#     new_speed1 = deltaV_1
+#     pool.balls[index[0]].update_speed(new_speed0)
+#     pool.balls[index[1]].update_speed(new_speed1)
 
 def update_speed_2collidedBalls(pool,index):
     ball1 = pool.balls[index[0]]
@@ -425,7 +425,9 @@ def bounce(pool,delta_t):
     for ball in balls.values():
                 bounce_status = detect(pool.board, ball, delta_t)
                 new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
-                ball.update_position(new_pos)
+                if pool.type_billard!='francais':
+                    check_exit(pool,ball)
+                update_ball(ball,new_pos,new_speed)ball.update_position(new_pos)
                 ball.update_speed(new_speed)
 
 def update_real_pool(pool,delta_t,epsilon = 0.01):
@@ -447,13 +449,28 @@ def update_real_pool(pool,delta_t,epsilon = 0.01):
 
         update_position(pool,delta_t)
         #friction(pool,delta_t,alpha=0.1,v_min=0.01)
-        friction(pool,delta_t,alpha=0.3,v_min=0.05)
+        friction(pool,delta_t,alpha=30,v_min=0.05)
         bounce(pool,delta_t)
     else :
         bounce(pool,delta_t)
-        friction(pool,delta_t,alpha=0.3,v_min=0.05)
+        friction(pool,delta_t,alpha=30,v_min=0.05)
     return at_equilibrium(pool)
 
+def check_exit(pool,ball):
+    pos=ball.position
+    pockets=Board.get_pockets(pool.board)
+    for j in range(len(pockets)):
+        if linalg.norm(pos-pockets[j])<2*ball.radius:
+            ball.update_state(False)
+
+def update_ball(ball,new_pos,new_speed):
+    if ball.state==False:
+        ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
+        ball.update_speed(np.array([0,0]))
+        print("FIN DE PARTIE")
+    else:
+        ball.update_position(new_pos)
+        ball.update_speed(new_speed)
 
 
 

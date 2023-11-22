@@ -130,7 +130,7 @@ class Pool:
                     x1, y1 = width / 2, length * 3 / 4
                     pos_1 = [x1, y1]
                     liste_pos.append(pos_1)
-                    eps = radius / 100
+                    eps = radius / 4
                     for k in range(2, 4):
                         y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
                         x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)
@@ -190,7 +190,7 @@ class Cue:
         """Energie en J, angle en rad par rapport à l'axe x"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
-        ball.update_speed(np.array([-np.sin(angle) * v_ball, np.cos(angle) * v_ball]))
+        ball.update_speed(np.array([-np.sin(angle*np.pi/180) * v_ball, np.cos(angle*np.pi/180) * v_ball]))
 
 # billard = Pool('americain')
 # print(billard.balls[0].radius)
