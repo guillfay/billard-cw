@@ -1,13 +1,9 @@
-import objet as objet
 import numpy as np
 import copy 
 
 def collided(ball1,ball2): 
     '''Vérifie si les deux boules se superposent, i.e : s'entrechoquent'''
-    if np.linalg.norm(ball1.position-ball2.position) < ball1.radius + ball2.radius : 
-        return True
-    else :
-        return False
+    return(np.linalg.norm(ball1.position-ball2.position) < ball1.radius + ball2.radius)
    
 def collision_matrix(pool): 
     '''Crée une matrice de booléen telle que matrix[i][j]
@@ -23,10 +19,10 @@ def collision_matrix(pool):
         matrix[i][i] = 0
     return matrix>0
 
-def impact_time(ball1,ball2,epsilon):
+def impact_time(ball1,ball2):
     '''Détermine l'instant d'impact entre deux boules qui s'entrechoquent.'''
 
-    square_radius = (ball1.radius+ball2.radius+epsilon)**2
+    square_radius = (ball1.radius+ball2.radius)**2
     Delta_Vx = ball2.speed[0] - ball1.speed[0]
     Delta_Vy = ball2.speed[1] - ball1.speed[1]
     Delta_X =  ball2.position[0] - ball1.position[0]
@@ -42,11 +38,18 @@ def impact_time(ball1,ball2,epsilon):
         sqrt_delta = np.sqrt(Delta)
         sol1 = (-b+sqrt_delta)/(2*a)
         sol2 = (-b-sqrt_delta)/(2*a)
-    sol1 = max(0,sol1)
-    sol2 = max(0,sol2) 
+    print(sol1,sol2)
+    
+    #sol1 = max(0,sol1)
+    #sol2 = max(0,sol2) 
+    #print(-min(-sol1,-sol2))
+    if sol1 < 0 :
+        raise ValueError("Sol 1 est négative ")
+    if sol2 < 0 :
+        raise ValueError("Sol 2 est négative ")
     return min(sol1,sol2) #on garde la plus petite solution positive
 
-def first_impact(pool,potential_collisions,epsilon):
+def first_impact(pool,potential_collisions):
     '''Détermine le premier choc chronologiquement et son instant.'''
     number_of_balls = pool.number_of_balls
     matrix = np.zeros((number_of_balls,number_of_balls))
@@ -54,7 +57,7 @@ def first_impact(pool,potential_collisions,epsilon):
         matrix[i][i] = np.inf
         for j in range(i+1,number_of_balls):
             if potential_collisions[i][j]:
-                matrix[i][j] = impact_time(pool.balls[i],pool.balls[j],epsilon)
+                matrix[i][j] = impact_time(pool.balls[i],pool.balls[j])
             else :
                 matrix[i][j] = np.inf
             matrix[j][i] = matrix[i][j]
@@ -174,28 +177,43 @@ def bounce(pool,delta_t):
                 ball.update_position(new_pos)
                 ball.update_speed(new_speed)
 
-def update_pool(pool,delta_t,epsilon = 0.1):
+def update_pool(pool,delta_t):
     # iteration naïve sans interactions physiques
-    naive_pool = copy.deepcopy(pool)
-    update_position(naive_pool,delta_t) #on update les boules sans chocs pour voir si elles se superposent
+    update_position(pool,delta_t) #on update les boules sans chocs pour voir si elles se superposent
     # Detection des chocs
-    potential_collisions = collision_matrix(naive_pool)
+    potential_collisions = collision_matrix(pool)
+    update_position(pool,-delta_t)
+    #Retour à l'état initial
     if np.any(potential_collisions):
-        t_0, collided_balls = first_impact(pool,potential_collisions,epsilon) #on extrait le moment du premier choc
+        t_0, collided_balls = first_impact(pool,potential_collisions) #on extrait le moment du premier choc
         if t_0 < delta_t:
-            update_position(pool,t_0) #on update les boules au moments du premier choc
+            #if t_0 > 0 :
+            friction(pool,t_0,alpha=0.3,v_min=0.05)
+            bounce(pool,t_0) #on update les boules au moments du premier choc
             update_speed_2collidedBalls(pool,collided_balls)
-            bounce(pool,delta_t)
-            if t_0 != 0 :
-                update_pool(pool,delta_t-t_0,epsilon)
+            update_pool(pool,delta_t-t_0)
+            
+            
 
         '''test de conservation de l'energie cinétique : '''
         #print(np.sum([np.linalg.norm(balls[i].speed)**2 for i in range(number_of_balls)]))
 
-        update_position(pool,delta_t)
-        friction(pool,delta_t,alpha=0.3,v_min=0.05)
-        bounce(pool,delta_t)
+        #update_position(pool,delta_t)
+        # bounce(pool,delta_t)
     else :
-        bounce(pool,delta_t)
         friction(pool,delta_t,alpha=0.3,v_min=0.05)
+        bounce(pool,delta_t)
     return at_equilibrium(pool)
+
+
+import graphique
+import objet_game as objet_game
+import numpy as np
+import matplotlib.pyplot as plt
+from functools import partial
+
+billard = objet_game.Pool('americain')
+billard.balls[0].update_speed(np.array([0.04,2]))
+
+ani = graphique.trace(billard,partial(update_pool,billard,0.02))
+plt.show()
