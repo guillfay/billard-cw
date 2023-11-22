@@ -208,7 +208,8 @@ def check_exit(pool,ball):
 
 def update_ball(ball,new_pos,new_speed):
     if ball.state==False:
-        ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
+        # ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
+        ball.update_position(np.array([0.1+1.8*ball.radius*ball.number,2.7]))
         ball.update_speed(np.array([0,0]))
         if ball.number==0:
             print("FIN DE PARTIE")
