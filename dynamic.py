@@ -1,11 +1,12 @@
 import numpy as np
 
-def update_pool(pool, deltaT):
+
+def update_pool(pool, delta_t):
     # version initiale sans rebond et sans interactions entre les boules et sans frottements
     balls = pool.balls
     for ball in balls.values():
-        bounce_status = detect(pool.board, ball, deltaT)
-        new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
+        bounce_status = detect(pool.board, ball, delta_t)
+        new_pos, new_speed = rebond(pool.board, ball, delta_t, bounce_status)
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
 
@@ -56,14 +57,13 @@ def rebond(board, ball, dt, bounce_status):
 
     return pos_reel, speed_reel
 
+# from objet import *
+# from graphique import *
+# from functools import partial
 
-"""from objet import *
-from graphique import *
-from functools import partial
+# my_pool = Pool(2)
+# cue = Cue(0.5)
+# cue.frappe(0.5, np.pi/3, my_pool.balls[0])
 
-my_pool = Pool(2)
-cue = Cue(0.5)
-cue.frappe(0.5, np.pi/3, my_pool.balls[0])
-
-animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=1/60))
-plt.show()"""
+# animation = trace(my_pool, partial(update_pool, pool=my_pool, deltaT=1/60))
+# plt.show()
