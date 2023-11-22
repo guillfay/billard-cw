@@ -36,6 +36,9 @@ def trace(billard, dynamic_func, queue):
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
         ax.add_patch(circle)
+    labels={key: ax.text(ball.position[0], ball.position[1], str(ball.number), ha='center', va='center', fontsize=5, color='white')  for key, ball in balls.items()}
+    for label in labels.values():
+        label
     # Affichage de la queue
     rectangle = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
     ax.add_patch(rectangle)
@@ -49,6 +52,7 @@ def trace(billard, dynamic_func, queue):
         dynamic_func()
         for key in balls:
             circles[key].set_center(tuple(balls[key].position))
+            labels[key].set_position(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
         angle = queue.angle
         if all(elements for elements in [np.all(billard.balls[k].speed==0) for k in range(billard.number_of_balls)]):
