@@ -31,12 +31,12 @@ def trace(billard, dynamic_func):
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
         ax.add_patch(circle)
+    # Affichage de la queue
+    queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
+    ax.add_patch(queue)
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
-
-    queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
-    ax.add_patch(queue)
 
     def update(frame):
         """Fonction mettant à jour la position des boules"""

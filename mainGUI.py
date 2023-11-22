@@ -54,9 +54,6 @@ class InputFrame(ttk.Frame):
         self.rowconfigure(5, weight=1)
         self.rowconfigure(6, weight=1)
         self.rowconfigure(7, weight=1)
-        self.rowconfigure(8, weight=1)
-        self.rowconfigure(9, weight=1)
-        self.rowconfigure(10, weight=1)
 
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
@@ -69,14 +66,11 @@ class InputFrame(ttk.Frame):
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
         frame2 = ttk.Labelframe(self, text="Paramètres de frappe")
         frame2.grid(column=0, row=4, columnspan=2, sticky="WE")
-        frame3 = ttk.Labelframe(self, text="Paramètres d'animation")
-        frame3.grid(column=0, row=6, columnspan=2, sticky="WE")
         # Création des labels descriptifs des entrées
         ttk.Label(frame1, text="Type de billard choisi :").grid(column=0, row=0)
         ttk.Label(frame1, text="Masse des boules (en kg) :").grid(column=0, row=3)
         ttk.Label(frame2, text="Angle de frappe (en °) :").grid(column=0, row=5)
         ttk.Label(frame2, text="Force de frappe (en %) :").grid(column=0, row=6)
-        ttk.Label(frame3, text="Pas de temps (en ms) :").grid(column=0, row=8)
 
         # Création des entrées
         self.choix = tk.IntVar()
@@ -105,10 +99,6 @@ class InputFrame(ttk.Frame):
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
 
-        self.delta_t_entry = ttk.Entry(frame3)
-        self.delta_t_entry.grid(column=1, row=8)
-        self.delta_t_entry.insert(0, 1000 / 60)
-
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
         choix = float(self.choix.get())
@@ -122,15 +112,13 @@ class InputFrame(ttk.Frame):
                 new_billard = Pool("anglais")
             case _:
                 raise Exception("problème avec la valeur de <choix>")
-        delta_t = float(self.delta_t_entry.get())
-        self.change_pool_func(new_billard, delta_t)
+        self.change_pool_func(new_billard)
 
     def tirer(self):
         self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
         
-    def angle_test(self, value):
-        print(value)
-
+    def angle_test(self, angle):
+        return angle
 
 class App(tk.Tk):
     """Classe permettant de lancer l'affichage"""
@@ -148,14 +136,13 @@ class App(tk.Tk):
         # Initialisation du billard
         self.billard = Pool("francais")
         self.queue = Cue(0.2)
-        self.delta_t = 1000 / 60
 
         self.__create_widgets()
 
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, self.delta_t)
+        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
@@ -163,11 +150,10 @@ class App(tk.Tk):
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
-    def change_pool_on_input(self, billard, delta_t):
+    def change_pool_on_input(self, billard):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
-        self.delta_t = delta_t
-        partial_update_pool = partial(update_pool, self.billard, self.delta_t)
+        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
 
     def tirer(self, energie, angle):
