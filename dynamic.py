@@ -64,7 +64,7 @@ def first_impact(pool,potential_collisions):
     index = np.array(np.unravel_index(np.argmin(matrix), matrix.shape))
     return np.min(matrix),index
 
-def update_position(pool,delta_t):
+def update_position_bounceless(pool,delta_t):
     '''Mets à jour la position de toutes les boules du billard à l'instant delta_t
     en considérant leur vitesse constante sur ce pas de temps'''
     number_of_balls = pool.number_of_balls
@@ -73,7 +73,7 @@ def update_position(pool,delta_t):
         pool.balls[i].update_speed(pool.balls[i].speed)
         pool.balls[i].update_position(new_position)
    
-def update_balls_bounce(board, ball, dt, bounce_status):
+def update_ball_bounce(board, ball, dt, bounce_status):
     '''Mets à jour la position et la vitesse d'une boule si celle-ci
     a rebondi contre un bord '''
     new_pos = ball.position + ball.speed * dt
@@ -167,29 +167,30 @@ def at_equilibrium(pool):
             return False
     return True
 
-def bounce(pool,delta_t):
+def update_positions_bounce(pool,delta_t):
     '''Mets à jour la position et la vitesse de toutes les boules si celles-ci
     ont rebondi contre un bord '''
     balls = pool.balls
     for ball in balls.values():
                 bounce_status = detect(pool.board, ball, delta_t)
-                new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
+                new_pos, new_speed = update_ball_bounce(pool.board, ball, delta_t, bounce_status)
                 ball.update_position(new_pos)
                 ball.update_speed(new_speed)
 
 def update_pool(pool,delta_t):
+    '''fait tout'''
     # iteration naïve sans interactions physiques
-    update_position(pool,delta_t) #on update les boules sans chocs pour voir si elles se superposent
+    update_position_bounceless(pool,delta_t) #on update les boules sans chocs pour voir si elles se superposent
     # Detection des chocs
     potential_collisions = collision_matrix(pool)
-    update_position(pool,-delta_t)
+    update_position_bounceless(pool,-delta_t)
     #Retour à l'état initial
     if np.any(potential_collisions):
         t_0, collided_balls = first_impact(pool,potential_collisions) #on extrait le moment du premier choc
         if t_0 < delta_t:
             #if t_0 > 0 :
             friction(pool,t_0,alpha=0.3,v_min=0.05)
-            bounce(pool,t_0) #on update les boules au moments du premier choc
+            update_positions_bounce(pool,t_0) #on update les boules au moments du premier choc
             update_speed_2collidedBalls(pool,collided_balls)
             update_pool(pool,delta_t-t_0)
             
@@ -198,11 +199,9 @@ def update_pool(pool,delta_t):
         '''test de conservation de l'energie cinétique : '''
         #print(np.sum([np.linalg.norm(balls[i].speed)**2 for i in range(number_of_balls)]))
 
-        #update_position(pool,delta_t)
-        # bounce(pool,delta_t)
     else :
         friction(pool,delta_t,alpha=0.3,v_min=0.05)
-        bounce(pool,delta_t)
+        update_positions_bounce(pool,delta_t)
     return at_equilibrium(pool)
 
 if __name__ == "__main__" :
