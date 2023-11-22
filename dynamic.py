@@ -8,7 +8,7 @@ def update_pool(pool, deltaT):
         new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
-    return pool
+    #return pool
 
 
 def detect(board, ball, dt):

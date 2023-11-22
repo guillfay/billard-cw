@@ -2,11 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from functools import partial
-from objet import *
 from objet_game import *
 from graphique import *
 from dynamic import *
-
 
 
 # --------------------------------------------------------------------------------------------
@@ -15,13 +13,15 @@ from dynamic import *
 
 class GraphFrame(ttk.Frame):
     """Classe permettant de générer la partie graphique de la fenêtre"""
+
     def __init__(self, master, billard, dynamic_func):
         super().__init__(master)
         self.widget = None
         self.master = master
         self.draw_canvas(billard, dynamic_func)
-        
+
     def draw_canvas(self, billard, dynamic_func):
+        """Méthode pour recréer un canvas pour l'affichage d'un billard dans une fenêtre Tkinter"""
         # On enlève les anciens widgets
         if self.widget:
             self.widget.destroy()
@@ -34,10 +34,10 @@ class GraphFrame(ttk.Frame):
         self.canvas.draw()
 
 
-
 class InputFrame(ttk.Frame):
     """Classe permettant de générer la partie configuration de la fenêtre"""
-    def __init__(self, master, billard, update_billard, tirer_func):
+
+    def __init__(self, master, billard, change_pool_func, tirer_func):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
@@ -58,7 +58,7 @@ class InputFrame(ttk.Frame):
         self.rowconfigure(10, weight=1)
 
         # Enregistrement des fonctions de màj
-        self.update_billard = update_billard
+        self.change_pool_func = change_pool_func
         self.__create_widgets(self.valider, billard)
         self.app_tirer_func = tirer_func
 
@@ -91,41 +91,44 @@ class InputFrame(ttk.Frame):
         self.masse_entry = ttk.Entry(frame1)
         self.masse_entry.grid(column=1, row=3)
         self.masse_entry.insert(0, self.balls[0].mass)
-        self.validate_button = tk.Button(frame1, text="Valider paramètres", activebackground="green", fg="green", command=valider)
+        self.validate_button = tk.Button(frame1, text="Valider paramètres", activebackground="green", fg="green",
+                                         command=valider)
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
-        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90, resolution=1)
+        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90,
+                                    resolution=1)
         self.angle_entry.grid(column=1, row=5)
-        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25, resolution=1)
+        self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25,
+                                    resolution=1)
         self.force_entry.grid(column=1, row=6)
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
-        
+
         self.deltaT_entry = ttk.Entry(frame3)
         self.deltaT_entry.grid(column=1, row=8)
-        
+
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
         choix = float(self.choix.get())
         # Création d'un nouveau billard pour afficher la prochaine frame (avec disjonction des cas)
-        if choix==1 :
-            # On appelle la fonction de mise en place du billard
-            billard = Pool("francais")
-        elif choix==2 :
-            # On appelle la fonction de mise en place du billard
-            billard = Pool("americain")
-        elif choix==3 :
-            # On appelle la fonction de mise en place du billard
-            billard = Pool("anglais")
-        self.update_billard(billard)
+        match choix:
+            case 1:
+                new_billard = Pool("francais")
+            case 2:
+                new_billard = Pool("americain")
+            case 3:
+                new_billard = Pool("anglais")
+            case _:
+                raise Exception("problème avec la valeur de <choix>")
+        self.change_pool_func(new_billard)
 
     def tirer(self):
         self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
 
 
-
 class App(tk.Tk):
     """Classe permettant de lancer l'affichage"""
+
     def __init__(self):
         super().__init__()
         self.title('Simulation billard')
@@ -138,32 +141,30 @@ class App(tk.Tk):
 
         # Initialisation du billard
         self.billard = Pool("francais")
-        
+        self.queue = Cue(0.2)
+
         self.__create_widgets()
 
     def __create_widgets(self):
         """Création de la partie graphe
         On commence par donner des paramètres à update_pool"""
-        partial_update_pool = partial(update_pool, self.billard, 1000/60)
+        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
         """Création de la partie configuration"""
-        self.input_frame = InputFrame(self, self.billard, self.update_pool_input, self.tirer)
+        self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
-    def update_pool_input(self, billard):
-        """Mise à jour de l'objet billard et recréation de l'animation"""
-        partial_update_pool = partial(update_pool, billard, 1000/60)
-        self.billard = update_pool(billard, 0.1)
+    def change_pool_on_input(self, billard):
+        """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
+        self.billard = billard
+        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
 
     def tirer(self, energie, angle):
         """Fonction permettant d'effectuer un tir"""
-        print("Tir!")
-        print(energie, angle)
-        C = Cue(0.2)
-        C.frappe(energie=energie/100000000, angle=angle, ball=self.billard.balls[0])
+        self.queue.frappe(energie=energie / 100000000, angle=angle, ball=self.billard.balls[0])
 
     def quit_me(self):
         """Je ne sais pas pourquoi il faut rajouter ça, mais ça marche.
@@ -172,9 +173,6 @@ class App(tk.Tk):
         self.destroy()
 
 
-
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-
-
