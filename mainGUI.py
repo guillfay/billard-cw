@@ -37,7 +37,7 @@ class GraphFrame(ttk.Frame):
 
 class InputFrame(ttk.Frame):
     """Classe permettant de générer la partie configuration de la fenêtre"""
-    def __init__(self, master, billard, update_billard):
+    def __init__(self, master, billard, update_billard, tirer_func):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
@@ -59,9 +59,10 @@ class InputFrame(ttk.Frame):
 
         # Enregistrement des fonctions de màj
         self.update_billard = update_billard
-        self.__create_widgets(self.valider, self.tirer, billard)
+        self.__create_widgets(self.valider, billard)
+        self.app_tirer_func = tirer_func
 
-    def __create_widgets(self, valider, tirer, billard):
+    def __create_widgets(self, valider, billard):
         # Création des Labelframe groupant les entrées
         frame1 = ttk.Labelframe(self, text="Paramètres du billard")
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
@@ -97,7 +98,7 @@ class InputFrame(ttk.Frame):
         self.angle_entry.grid(column=1, row=5)
         self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25, resolution=1)
         self.force_entry.grid(column=1, row=6)
-        self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=tirer)
+        self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
         
         self.deltaT_entry = ttk.Entry(frame3)
@@ -119,9 +120,8 @@ class InputFrame(ttk.Frame):
         self.update_billard(billard)
 
     def tirer(self):
-        """Fonction permettant d'effectuer un tir"""
-        C=Cue(0.2)
-        C.frappe(energie=self.force_entry.get()/100000000,angle=self.angle_entry.get(),ball=self.balls[0])
+        self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
+
 
 
 class App(tk.Tk):
@@ -149,7 +149,7 @@ class App(tk.Tk):
         self.grap_frame.grid(column=0, row=0)
 
         """Création de la partie configuration"""
-        self.input_frame = InputFrame(self, self.billard, self.update_pool_input)
+        self.input_frame = InputFrame(self, self.billard, self.update_pool_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
     def update_pool_input(self, billard):
@@ -157,6 +157,13 @@ class App(tk.Tk):
         partial_update_pool = partial(update_pool, billard, 1000/60)
         self.billard = update_pool(billard, 0.1)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
+
+    def tirer(self, energie, angle):
+        """Fonction permettant d'effectuer un tir"""
+        print("Tir!")
+        print(energie, angle)
+        C = Cue(0.2)
+        C.frappe(energie=energie/100000000, angle=angle, ball=self.billard.balls[0])
 
     def quit_me(self):
         """Je ne sais pas pourquoi il faut rajouter ça, mais ça marche.
