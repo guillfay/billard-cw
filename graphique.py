@@ -31,7 +31,11 @@ def trace(billard, dynamic_func, queue):
     if billard.type_billard != 'francais':
         for pocket in billard.board.get_pockets():
             ax.add_patch(plt.Circle(tuple(pocket), radius=balls[0].radius, color='k'))
-        ax.text(0.1, board.length+0.2, "Boules hors-jeu", va='center', fontsize=6, color='black')
+            if billard.type_billard != 'anglais':
+                pos_y=0.05
+            else:
+                pos_y=0.2
+        ax.text(0.1, board.length+pos_y, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Création d'un dictionnaire des boules et ajout sur le graphique
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
@@ -40,7 +44,7 @@ def trace(billard, dynamic_func, queue):
     for label in labels.values():
         label
     # Affichage de la queue
-    rectangle = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
+    rectangle = patches.Rectangle((balls[0].position[0] - balls[0].radius / 2, balls[0].position[1]), 0.02, -1, color='brown')
     ax.add_patch(rectangle)
     # Affichage de la frame
     frame_template = "frame = %i"
@@ -59,7 +63,7 @@ def trace(billard, dynamic_func, queue):
             rectangle.set_alpha(1)
         else:
             rectangle.set_alpha(0)
-        rectangle.set_xy((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]))
+        rectangle.set_xy((billard.balls[0].position[0] - billard.balls[0].radius / 2, billard.balls[0].position[1]))
         transform = Affine2D().rotate_deg_around(billard.balls[0].position[0], billard.balls[0].position[1], -angle) + ax.transData
         rectangle.set_transform(transform)
 
