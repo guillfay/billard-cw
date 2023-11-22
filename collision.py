@@ -410,7 +410,13 @@ def friction(pool,deltaT,alpha=0.95,v_min=0.01):
             new_speed = balls[i].speed - deltaV
             balls[i].update_speed(new_speed)
 
-
+def at_equilibrium(pool):
+    balls = pool.balls
+    number_of_balls = pool.number_of_balls
+    for i in range(number_of_balls):
+        if norm(balls[i].speed)>0 :
+            return True
+    return False
 
 
 def update_real_pool(pool,deltaT,epsilon = 0.01):
@@ -452,6 +458,7 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
             ball.update_position(new_pos)
             ball.update_speed(new_speed)
         friction(pool,deltaT,alpha=0.01,v_min=0.001)
+    return at_equilibrium(pool)
 
 
 
