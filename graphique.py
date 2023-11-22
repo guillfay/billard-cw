@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
-import objet_game
 
 
 # --------------------------------------------------------------------------------------------
@@ -23,7 +22,7 @@ def trace(billard, dynamic_func):
     ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
     ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
     ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1],
-                                edgecolor="black", facecolor="#32a852", fill=True))
+                               edgecolor="black", facecolor="#32a852", fill=True))
     # Création d'un dictionnaire des boules et ajout sur le graphique
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color="red") for key, ball in balls.items()}
     for circle in circles.values():
@@ -32,7 +31,7 @@ def trace(billard, dynamic_func):
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
 
-    queue=patches.Rectangle((billard.balls[0].position[0]-0.02/2,billard.balls[0].position[1]),0.02,-10)
+    queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
     ax.add_patch(queue)
 
     def update(frame):
@@ -44,7 +43,5 @@ def trace(billard, dynamic_func):
         frame_text.set_text(frame_template % frame)
         return circles, frame_text
 
-    ani = FuncAnimation(fig, update, interval=1000/60, cache_frame_data=False)
+    ani = FuncAnimation(fig, update, interval=1000 / 60, cache_frame_data=False)
     return fig, ani
-
-
