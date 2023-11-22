@@ -1,6 +1,6 @@
 import graphique
 import collision
-import objet as objet
+import objet_game as objet_game
 import numpy as np
 import matplotlib.pyplot as plt
 from functools import partial
@@ -81,7 +81,7 @@ print(billard2.number_of_balls)
 billard2.balls[1].update_speed(np.array([1,0]))
 update_real_pool(billard2,0.99)
 
-'''
+
 #cas double choc milieu 
 billard2 = objet.Pool(3,15,15)
 ball0 = billard2.balls[0]
@@ -94,7 +94,7 @@ billard2.balls[0].update_speed(np.array([0,-1]))
 ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.1,0.01))
 plt.show()
 
-'''
+
 #cas double choc milieu 
 billard2 = objet.Pool(3,15,15)
 ball0 = billard2.balls[0]
@@ -110,3 +110,8 @@ ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.01,
 plt.show()
 
 '''
+billard = objet_game.Pool('americain')
+billard.balls[0].update_speed(np.array([0,2]))
+
+ani = graphique.trace(billard,partial(collision.update_real_pool,billard,0.0025,0.01))
+plt.show()
