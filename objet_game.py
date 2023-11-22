@@ -1,5 +1,5 @@
 import numpy as np
-
+import numpy.linalg as linalg
 
 class Ball:
     def __init__(self, number, initial_position, radius, mass, state, color):
@@ -174,7 +174,7 @@ class Pool:
         for i in range(0, number_of_balls):
             self.balls[i] = Ball(i, np.array(liste_pos[i]), radius, mass, True, liste_color[i])
         self.number_of_balls = number_of_balls
-
+     
     def __str__(self):
         chaine = ""
         for i in range(self.number_of_balls):
