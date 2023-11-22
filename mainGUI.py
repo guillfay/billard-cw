@@ -26,6 +26,7 @@ class GraphFrame(ttk.Frame):
         if self.widget:
             self.widget.destroy()
         # On appelle l'animation donnée par la fonction trace de graphique.py
+        # Il nous faut conserver l'objet ani pour que l'animation continue de se faire.
         self.fig, self.ani = trace(billard, dynamic_func)
         # On génère le canvas
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.master)
@@ -147,12 +148,12 @@ class App(tk.Tk):
 
     def __create_widgets(self):
         """Création de la partie graphe
-        On commence par donner des paramètres à update_pool"""
+        Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
         partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
-        """Création de la partie configuration"""
+        # Création de la partie configuration
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
