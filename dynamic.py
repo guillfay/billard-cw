@@ -1,5 +1,5 @@
 import numpy as np
-import copy 
+
 
 def collided(ball1,ball2): 
     '''Vérifie si les deux boules se superposent, i.e : s'entrechoquent'''
@@ -205,15 +205,14 @@ def update_pool(pool,delta_t):
         bounce(pool,delta_t)
     return at_equilibrium(pool)
 
+if __name__ == "__main__" :
+    import graphique
+    import objet_game as objet_game
+    import matplotlib.pyplot as plt
+    from functools import partial
 
-import graphique
-import objet_game as objet_game
-import numpy as np
-import matplotlib.pyplot as plt
-from functools import partial
+    billard = objet_game.Pool('americain')
+    billard.balls[0].update_speed(np.array([0,2]))
 
-billard = objet_game.Pool('americain')
-billard.balls[0].update_speed(np.array([0.04,2]))
-
-ani = graphique.trace(billard,partial(update_pool,billard,0.02))
-plt.show()
+    ani = graphique.trace(billard,partial(update_pool,billard,0.02))
+    plt.show()
