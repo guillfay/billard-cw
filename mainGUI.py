@@ -60,10 +60,10 @@ class InputFrame(ttk.Frame):
 
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
-        self.__create_widgets(self.valider, billard)
+        self.__create_widgets(self.valider, billard, self.angle_test)
         self.app_tirer_func = tirer_func
 
-    def __create_widgets(self, valider, billard):
+    def __create_widgets(self, valider, billard, angle):
         # Création des Labelframe groupant les entrées
         frame1 = ttk.Labelframe(self, text="Paramètres du billard")
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
@@ -76,7 +76,7 @@ class InputFrame(ttk.Frame):
         ttk.Label(frame1, text="Masse des boules (en kg) :").grid(column=0, row=3)
         ttk.Label(frame2, text="Angle de frappe (en °) :").grid(column=0, row=5)
         ttk.Label(frame2, text="Force de frappe (en %) :").grid(column=0, row=6)
-        ttk.Label(frame3, text="Pas de temps (en s) :").grid(column=0, row=8)
+        ttk.Label(frame3, text="Pas de temps (en ms) :").grid(column=0, row=8)
 
         # Création des entrées
         self.choix = tk.IntVar()
@@ -97,7 +97,7 @@ class InputFrame(ttk.Frame):
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
         self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=150, tickinterval=90,
-                                    resolution=1)
+                                    resolution=1, command=angle)
         self.angle_entry.grid(column=1, row=5)
         self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=150, tickinterval=25,
                                     resolution=1)
@@ -105,8 +105,9 @@ class InputFrame(ttk.Frame):
         self.validate_button = tk.Button(frame2, text="Tirer", activebackground="green", fg="green", command=self.tirer)
         self.validate_button.grid(column=0, row=7, columnspan=2)
 
-        self.deltaT_entry = ttk.Entry(frame3)
-        self.deltaT_entry.grid(column=1, row=8)
+        self.delta_t_entry = ttk.Entry(frame3)
+        self.delta_t_entry.grid(column=1, row=8)
+        self.delta_t_entry.insert(0, 1000 / 60)
 
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
@@ -121,10 +122,14 @@ class InputFrame(ttk.Frame):
                 new_billard = Pool("anglais")
             case _:
                 raise Exception("problème avec la valeur de <choix>")
-        self.change_pool_func(new_billard)
+        delta_t = float(self.delta_t_entry.get())
+        self.change_pool_func(new_billard, delta_t)
 
     def tirer(self):
         self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
+        
+    def angle_test(self, value):
+        print(value)
 
 
 class App(tk.Tk):
@@ -143,13 +148,14 @@ class App(tk.Tk):
         # Initialisation du billard
         self.billard = Pool("francais")
         self.queue = Cue(0.2)
+        self.delta_t = 1000 / 60
 
         self.__create_widgets()
 
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
+        partial_update_pool = partial(update_pool, self.billard, self.delta_t)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
@@ -157,10 +163,11 @@ class App(tk.Tk):
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
         self.input_frame.grid(column=1, row=0)
 
-    def change_pool_on_input(self, billard):
+    def change_pool_on_input(self, billard, delta_t):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
-        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
+        self.delta_t = delta_t
+        partial_update_pool = partial(update_pool, self.billard, self.delta_t)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
 
     def tirer(self, energie, angle):
