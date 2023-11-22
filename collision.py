@@ -309,9 +309,9 @@ def update_speed_collision(pool,number_of_balls, packs):
         ball = dicoballs[num_ball]
         ball.speed = ball.speed + dico_dv[num_ball]
 
-def rebond(board, ball, dt, bounce_status):
-    pos_reel = ball.position + ball.speed * dt
-    speed_reel = ball.speed
+def update_balls_bounce(board, ball, dt, bounce_status):
+    new_pos = ball.position + ball.speed * dt
+    new_speed = ball.speed
 
     x_min = min([corner[0] for corner in board.corners]) + ball.radius
     x_max = max([corner[0] for corner in board.corners]) - ball.radius
@@ -325,19 +325,19 @@ def rebond(board, ball, dt, bounce_status):
         return 2 * y_bord - y_virt
 
     if bounce_status[0]:
-        pos_reel[0] = rebond_x(x_min, pos_reel[0])
-        speed_reel = speed_reel * np.array([-1, 1])
+        new_pos[0] = rebond_x(x_min, new_pos[0])
+        new_speed = new_speed * np.array([-1, 1])
     if bounce_status[2]:
-        pos_reel[0] = rebond_x(x_max, pos_reel[0])
-        speed_reel = speed_reel * np.array([-1, 1])
+        new_pos[0] = rebond_x(x_max, new_pos[0])
+        new_speed = new_speed * np.array([-1, 1])
     if bounce_status[3]:
-        pos_reel[1] = rebond_y(y_min, pos_reel[1])
-        speed_reel = speed_reel * np.array([1, -1])
+        new_pos[1] = rebond_y(y_min, new_pos[1])
+        new_speed = new_speed * np.array([1, -1])
     if bounce_status[1]:
-        pos_reel[1] = rebond_y(y_max, pos_reel[1])
-        speed_reel = speed_reel * np.array([1, -1])
+        new_pos[1] = rebond_y(y_max, new_pos[1])
+        new_speed = new_speed * np.array([1, -1])
 
-    return pos_reel, speed_reel
+    return new_pos, new_speed
 
 def detect(board, ball, dt):
     """Cette fonction prend en argument une table, une balle et l'incrément de temps.
@@ -390,8 +390,6 @@ def update_speed_2collidedBalls(pool,index):
     pool.balls[index[0]].update_speed(new_speed1)
     pool.balls[index[1]].update_speed(new_speed2)
 
-
-
 def detection_of_collision(potential_collisions,number_of_balls):
     for i in range(number_of_balls):
         for j in range(i+1,number_of_balls):
@@ -415,9 +413,11 @@ def at_equilibrium(pool):
     number_of_balls = pool.number_of_balls
     for i in range(number_of_balls):
         if norm(balls[i].speed)>0 :
-            return True
-    return False
+            return False
+    return True
 
+def bounce(pool):
+    pass
 
 def update_real_pool(pool,deltaT,epsilon = 0.01):
     #initialisation de l'update
@@ -439,14 +439,14 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
             #packs = Packed_balls(pool.balls,number_of_balls,epsilon)
             #update_speed_collision(pool,number_of_balls,packs)
             update_speed_2collidedBalls(pool,collided_balls)
-            update_balls(pool,0.01,number_of_balls)
+            #update_balls(pool,0.01,number_of_balls)
             for ball in balls.values():
-                bounce_status = detect(pool.board, ball, deltaT)
-                new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
+                bounce_status = detect(pool.board, ball, deltaT-t_0)
+                new_pos, new_speed = update_balls_bounce(pool.board, ball, deltaT-t_0, bounce_status)
                 ball.update_position(new_pos)
                 ball.update_speed(new_speed)
-            if t_0 != 0 :
-                update_real_pool(pool,deltaT-t_0,epsilon)
+            #if t_0 != 0 :
+                #update_real_pool(pool,deltaT-t_0,epsilon)
         print(np.sum([np.linalg.norm(balls[i].speed)**2 for i in range(number_of_balls)]))
 
         update_balls(pool,deltaT,number_of_balls)
@@ -454,7 +454,7 @@ def update_real_pool(pool,deltaT,epsilon = 0.01):
     else :
         for ball in balls.values():
             bounce_status = detect(pool.board, ball, deltaT)
-            new_pos, new_speed = rebond(pool.board, ball, deltaT, bounce_status)
+            new_pos, new_speed = update_balls_bounce(pool.board, ball, deltaT, bounce_status)
             ball.update_position(new_pos)
             ball.update_speed(new_speed)
         friction(pool,deltaT,alpha=0.01,v_min=0.001)

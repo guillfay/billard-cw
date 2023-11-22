@@ -37,19 +37,22 @@ print(orientation_vector(ball1,ball2))
 '''
 
 
-#ca marche cas simple
+#ca marche cas simple doublr choc 
 
-billard2 = objet.Pool(3,15,15)
+'''
+billard2 = objet.Pool(2,15,15)
 ball0 = billard2.balls[0]
 ball1 = billard2.balls[1]
 #ball2 = billard2.balls[2]
-for i in range(3):
+for i in range(2):
     billard2.balls[i].update_position(np.array([4*i+1,1]))
 billard2.balls[0].update_speed(np.array([1,0]))
-billard2.balls[2].update_speed(np.array([-1,0]))
+#billard2.balls[2].update_speed(np.array([-1,0]))
 ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.1,0.01))
 plt.show()
-'''
+
+
+#cas pas milieu 
 billard2 = objet.Pool(2,15,15)
 ball0 = billard2.balls[0]
 ball1 = billard2.balls[1]
@@ -76,4 +79,34 @@ print(impact_time(ball1,ball0,0.001))
 
 print(billard2.number_of_balls)
 billard2.balls[1].update_speed(np.array([1,0]))
-update_real_pool(billard2,0.99)'''
+update_real_pool(billard2,0.99)
+
+'''
+#cas double choc milieu 
+billard2 = objet.Pool(3,15,15)
+ball0 = billard2.balls[0]
+ball1 = billard2.balls[1]
+ball2 = billard2.balls[2]
+billard2.balls[2].update_position(np.array([3,2]))
+billard2.balls[1].update_position(np.array([5,2]))
+billard2.balls[0].update_position(np.array([4,9]))
+billard2.balls[0].update_speed(np.array([0,-1]))
+ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.1,0.01))
+plt.show()
+
+'''
+#cas double choc milieu 
+billard2 = objet.Pool(3,15,15)
+ball0 = billard2.balls[0]
+ball1 = billard2.balls[1]
+ball2 = billard2.balls[2]
+billard2.balls[2].update_position(np.array([6,2]))
+billard2.balls[1].update_position(np.array([2,6]))
+billard2.balls[0].update_position(np.array([2,2]))
+billard2.balls[1].update_speed(np.array([0,-1]))
+billard2.balls[2].update_speed(np.array([-1,0]))
+ani = graphique.trace(billard2,partial(collision.update_real_pool,billard2,0.01,0.01))
+
+plt.show()
+
+'''
