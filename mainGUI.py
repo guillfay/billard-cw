@@ -42,22 +42,13 @@ class InputFrame(ttk.Frame):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=1)
-
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
-        self.rowconfigure(3, weight=1)
-        self.rowconfigure(4, weight=1)
-        self.rowconfigure(5, weight=1)
-        self.rowconfigure(6, weight=1)
-        self.rowconfigure(7, weight=1)
-        self.rowconfigure(8, weight=1)
-        self.rowconfigure(9, weight=1)
-        self.rowconfigure(10, weight=1)
-
+        # Création des colonnes
+        for k in range (3):
+            self.columnconfigure(k, weight=1)
+        # Création des lignes
+        for k in range (11):
+            self.rowconfigure(k, weight=1)
+            
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
         self.__create_widgets(self.valider, billard)
