@@ -7,6 +7,7 @@ from graphique import *
 from dynamic import *
 
 
+
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 13-------------------------------------
 # --------------------------------------------------------------------------------------------
@@ -14,20 +15,20 @@ from dynamic import *
 class GraphFrame(ttk.Frame):
     """Classe permettant de générer la partie graphique de la fenêtre"""
 
-    def __init__(self, master, billard, dynamic_func, angle=0):
+    def __init__(self, master, billard, dynamic_func, queue):
         super().__init__(master)
         self.widget = None
         self.master = master
-        self.draw_canvas(billard, dynamic_func, angle)
+        self.draw_canvas(billard, dynamic_func, queue)
 
-    def draw_canvas(self, billard, dynamic_func, angle):
+    def draw_canvas(self, billard, dynamic_func, queue):
         """Méthode pour recréer un canvas pour l'affichage d'un billard dans une fenêtre Tkinter"""
         # On enlève les anciens widgets
         if self.widget:
             self.widget.destroy()
         # On appelle l'animation donnée par la fonction trace de graphique.py
         # Il nous faut conserver l'objet ani pour que l'animation continue de se faire.
-        self.fig, self.ani = trace(billard, dynamic_func, angle)
+        self.fig, self.ani = trace(billard, dynamic_func, queue)
         # On génère le canvas
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.master)
         self.widget = self.canvas.get_tk_widget()
@@ -35,10 +36,11 @@ class GraphFrame(ttk.Frame):
         self.canvas.draw()
 
 
+
 class InputFrame(ttk.Frame):
     """Classe permettant de générer la partie configuration de la fenêtre"""
 
-    def __init__(self, master, billard, change_pool_func, tirer_func):
+    def __init__(self, master, billard, change_pool_func, tirer_func, angle_func):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
@@ -57,10 +59,11 @@ class InputFrame(ttk.Frame):
 
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
-        self.__create_widgets(self.valider, billard, self.angle_test)
+        self.__create_widgets(self.valider, billard)
         self.app_tirer_func = tirer_func
+        self.app_angle_func = angle_func
 
-    def __create_widgets(self, valider, billard, angle):
+    def __create_widgets(self, valider, billard):
         # Création des Labelframe groupant les entrées
         frame1 = ttk.Labelframe(self, text="Paramètres du billard")
         frame1.grid(column=0, row=0, columnspan=2, sticky="WE")
@@ -75,7 +78,6 @@ class InputFrame(ttk.Frame):
         # Création des entrées
         self.choix = tk.IntVar()
         self.choix.set(1)
-        self.billard = billard
         self.balls = billard.balls
 
         self.choix1_entry = ttk.Radiobutton(frame1, text="Français", variable=self.choix, value=1)
@@ -91,8 +93,7 @@ class InputFrame(ttk.Frame):
                                          command=valider)
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
-        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=180, tickinterval=90,
-                                    resolution=1, command=angle)
+        self.angle_entry = tk.Scale(frame2, from_=-180, to=180, orient="horizontal", length=180, tickinterval=90, command=self.angle_test)
         self.angle_entry.grid(column=1, row=5)
         self.force_entry = tk.Scale(frame2, from_=0, to=100, orient="horizontal", length=180, tickinterval=25,
                                     resolution=1)
@@ -115,13 +116,15 @@ class InputFrame(ttk.Frame):
                 new_billard = Pool("anglais")
             case _:
                 raise Exception("problème avec la valeur de <choix>")
-        self.change_pool_func(new_billard)
+        self.change_pool_func(new_billard, Cue(0.2))
 
     def tirer(self):
         self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
         
     def angle_test(self, angle):
-        self.change_pool_func(self.billard, float(angle))
+        self.app_angle_func(float(angle))
+
+
 
 class App(tk.Tk):
     """Classe permettant de lancer l'affichage"""
@@ -147,28 +150,33 @@ class App(tk.Tk):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
         partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
-        self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.angle)
+        self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
-
         # Création de la partie configuration
-        self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer)
+        self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer, self.new_angle)
         self.input_frame.grid(column=1, row=0)
 
-    def change_pool_on_input(self, billard, angle=0):
+    def change_pool_on_input(self, billard, queue):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
+        self.queue = queue
         partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
-        self.grap_frame.draw_canvas(self.billard, partial_update_pool, angle)
+        self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
     def tirer(self, energie, angle):
         """Fonction permettant d'effectuer un tir"""
-        self.queue.frappe(energie=energie / 100000000, angle=angle, ball=self.billard.balls[0])
+        self.queue.frappe(energie=energie / 100000000, angle=angle*np.pi/180, ball=self.billard.balls[0])
+        
+    def new_angle(self, angle):
+        """Fonction permettant de changer l'angle de la queue"""
+        self.queue.update_angle(angle)
 
     def quit_me(self):
         """Je ne sais pas pourquoi il faut rajouter ça, mais ça marche.
         Permet de correctement gérer le clic sur le bouton de fermeture de la fenêtre"""
         self.quit()
         self.destroy()
+
 
 
 if __name__ == "__main__":
