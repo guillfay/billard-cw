@@ -5,7 +5,7 @@ from functools import partial
 from objet_game import *
 from graphique import *
 from dynamic import *
-from collision import *
+
 
 
 # --------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_real_pool, self.billard, 0.0025, 0.01)
+        partial_update_pool = partial(update_pool, self.billard, 0.0025, 0.01)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool)
         self.grap_frame.grid(column=0, row=0)
 
@@ -153,7 +153,7 @@ class App(tk.Tk):
     def change_pool_on_input(self, billard):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
-        partial_update_pool = partial(update_real_pool, self.billard, 0.0025, 0.01)
+        partial_update_pool = partial(update_pool, self.billard, 0.0025, 0.01)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool)
 
     def tirer(self, energie, angle):

@@ -1,5 +1,4 @@
-import objet as objet
-import dynamic as dynamic
+from objet_game import *
 import numpy as np
 import copy 
 
@@ -15,12 +14,93 @@ def collision_matrix(pool):
     #est True si les boules i et j s'entrechoquent
     False sinon'''
     balls = pool.balls
-    for ball in balls.values():
-        bounce_status = detect(pool.board, ball, delta_t)
-        new_pos, new_speed = rebond(pool.board, ball, delta_t, bounce_status)
-        ball.update_position(new_pos)
-        ball.update_speed(new_speed)
+    number_of_balls = pool.number_of_balls
+    matrix = np.zeros((number_of_balls,number_of_balls))
+    for i in range(number_of_balls):
+        for j in range(i+1,number_of_balls):
+            matrix[i][j] = collided(balls[i],balls[j])
+            matrix[j][i] = matrix[i][j]
+        matrix[i][i] = 0
+    return matrix>0
 
+def impact_time(ball1,ball2,epsilon):
+    '''Détermine l'instant d'impact entre deux boules qui s'entrechoquent.'''
+
+    square_radius = (ball1.radius+ball2.radius+epsilon)**2
+    Delta_Vx = ball2.speed[0] - ball1.speed[0]
+    Delta_Vy = ball2.speed[1] - ball1.speed[1]
+    Delta_X =  ball2.position[0] - ball1.position[0]
+    Delta_Y =  ball2.position[1] - ball1.position[1]
+    a = Delta_Vx**2 + Delta_Vy**2
+    b = 2*Delta_X*Delta_Vx + 2*Delta_Y*Delta_Vy
+    c = Delta_X**2 + Delta_Y**2 - square_radius
+    if a == 0 :
+        sol1 = -c/b
+        sol2 = sol1
+    else :
+        Delta = b**2 - 4*a*c
+        sqrt_delta = np.sqrt(Delta)
+        sol1 = (-b+sqrt_delta)/(2*a)
+        sol2 = (-b-sqrt_delta)/(2*a)
+    sol1 = max(0,sol1)
+    sol2 = max(0,sol2) 
+    return min(sol1,sol2) #on garde la plus petite solution positive
+
+def first_impact(pool,potential_collisions,epsilon):
+    '''Détermine le premier choc chronologiquement et son instant.'''
+    number_of_balls = pool.number_of_balls
+    matrix = np.zeros((number_of_balls,number_of_balls))
+    for i in range(number_of_balls):
+        matrix[i][i] = np.inf
+        for j in range(i+1,number_of_balls):
+            if potential_collisions[i][j]:
+                matrix[i][j] = impact_time(pool.balls[i],pool.balls[j],epsilon)
+            else :
+                matrix[i][j] = np.inf
+            matrix[j][i] = matrix[i][j]
+    index = np.array(np.unravel_index(np.argmin(matrix), matrix.shape))
+    return np.min(matrix),index
+
+def update_position(pool,delta_t):
+    '''Mets à jour la position de toutes les boules du billard à l'instant delta_t
+    en considérant leur vitesse constante sur ce pas de temps'''
+    number_of_balls = pool.number_of_balls
+    for i in range(number_of_balls):
+        new_position = pool.balls[i].position + delta_t*pool.balls[i].speed
+        pool.balls[i].update_speed(pool.balls[i].speed)
+        pool.balls[i].update_position(new_position)
+   
+def update_balls_bounce(board, ball, dt, bounce_status):
+    '''Mets à jour la position et la vitesse d'une boule si celle-ci
+    a rebondi contre un bord '''
+    new_pos = ball.position + ball.speed * dt
+    new_speed = ball.speed
+
+    x_min = min([corner[0] for corner in board.corners]) + ball.radius
+    x_max = max([corner[0] for corner in board.corners]) - ball.radius
+    y_min = min([corner[1] for corner in board.corners]) + ball.radius
+    y_max = max([corner[1] for corner in board.corners]) - ball.radius
+    
+    def rebond_x(x_bord, x_virt):
+        return 2 * x_bord - x_virt
+
+    def rebond_y(y_bord, y_virt):
+        return 2 * y_bord - y_virt
+
+    if bounce_status[0]:
+        new_pos[0] = rebond_x(x_min, new_pos[0])
+        new_speed = new_speed * np.array([-1, 1])
+    if bounce_status[2]:
+        new_pos[0] = rebond_x(x_max, new_pos[0])
+        new_speed = new_speed * np.array([-1, 1])
+    if bounce_status[3]:
+        new_pos[1] = rebond_y(y_min, new_pos[1])
+        new_speed = new_speed * np.array([1, -1])
+    if bounce_status[1]:
+        new_pos[1] = rebond_y(y_max, new_pos[1])
+        new_speed = new_speed * np.array([1, -1])
+
+    return new_pos, new_speed
 
 def detect(board, ball, dt):
     """Cette fonction prend en argument une table, une balle et l'incrément de temps.
@@ -85,14 +165,13 @@ def at_equilibrium(pool):
     return True
 
 def bounce(pool,delta_t):
-    '''Mets à jour la position et la vitesse de toutes les boules si celles-ci
-    ont rebondi contre un bord '''
     balls = pool.balls
     for ball in balls.values():
-                bounce_status = detect(pool.board, ball, delta_t)
-                new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
-                ball.update_position(new_pos)
-                ball.update_speed(new_speed)
+        bounce_status = detect(pool.board, ball, delta_t)
+        new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
+        if pool.type_billard!='francais':
+            check_exit(pool,ball)
+        update_ball(ball,new_pos,new_speed)
 
 def update_pool(pool,delta_t,epsilon = 0.1):
     # iteration naïve sans interactions physiques
@@ -113,9 +192,26 @@ def update_pool(pool,delta_t,epsilon = 0.1):
         #print(np.sum([np.linalg.norm(balls[i].speed)**2 for i in range(number_of_balls)]))
 
         update_position(pool,delta_t)
-        friction(pool,delta_t,alpha=0.3,v_min=0.05)
+        friction(pool,delta_t,alpha=30,v_min=0.05)
         bounce(pool,delta_t)
     else :
         bounce(pool,delta_t)
-        friction(pool,delta_t,alpha=0.3,v_min=0.05)
+        friction(pool,delta_t,alpha=30,v_min=0.05)
     return at_equilibrium(pool)
+
+def check_exit(pool,ball):
+    pos=ball.position
+    pockets=Board.get_pockets(pool.board)
+    for j in range(len(pockets)):
+        if linalg.norm(pos-pockets[j])<3*ball.radius:
+            ball.update_state(False)
+
+def update_ball(ball,new_pos,new_speed):
+    if ball.state==False:
+        ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
+        ball.update_speed(np.array([0,0]))
+        if ball.number==0:
+            print("FIN DE PARTIE")
+    else:
+        ball.update_position(new_pos)
+        ball.update_speed(new_speed)
