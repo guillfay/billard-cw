@@ -1,4 +1,4 @@
-import objet as objet
+from objet_game import *
 import dynamic as dynamic
 import numpy as np
 import copy 
@@ -423,12 +423,11 @@ def at_equilibrium(pool):
 def bounce(pool,delta_t):
     balls = pool.balls
     for ball in balls.values():
-                bounce_status = detect(pool.board, ball, delta_t)
-                new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
-                if pool.type_billard!='francais':
-                    check_exit(pool,ball)
-                update_ball(ball,new_pos,new_speed)ball.update_position(new_pos)
-                ball.update_speed(new_speed)
+        bounce_status = detect(pool.board, ball, delta_t)
+        new_pos, new_speed = update_balls_bounce(pool.board, ball, delta_t, bounce_status)
+        if pool.type_billard!='francais':
+            check_exit(pool,ball)
+        update_ball(ball,new_pos,new_speed)
 
 def update_real_pool(pool,delta_t,epsilon = 0.01):
     # iteration naïve sans interactions physiques
@@ -460,14 +459,15 @@ def check_exit(pool,ball):
     pos=ball.position
     pockets=Board.get_pockets(pool.board)
     for j in range(len(pockets)):
-        if linalg.norm(pos-pockets[j])<2*ball.radius:
+        if linalg.norm(pos-pockets[j])<5*ball.radius:
             ball.update_state(False)
 
 def update_ball(ball,new_pos,new_speed):
     if ball.state==False:
         ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
         ball.update_speed(np.array([0,0]))
-        print("FIN DE PARTIE")
+        if ball.number==0:
+            print("FIN DE PARTIE")
     else:
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
