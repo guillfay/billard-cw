@@ -1,29 +1,29 @@
 ## Coding Week 2023-2024 - Billard Interactif Techniquement Exploitable
 
-## Description :clipboard:
+## :clipboard: Description 
 Simulation et affichage d'une billard interactif :8ball:
 
-## Membres :man_office_worker:
+## :construction_worker: Membres 
 - Montoya Samuel
 - Delavaud Paul-Emile
 - Faynot Guillaume
 - Noël-Bertin Paul
 - Talbaut Gatien
 
-## Bibliothèques :books:
+## :books: Bibliothèques 
 
 Installation des bibliothèques:
 ```bash
 pip install -r requirements.txt
 ```
-## Lancement de la simulation :chart_with_upwards_trend:
+## :chart_with_upwards_trend: Lancement de la simulation 
 Après avoir installé les bibliothèques requises, taper dans un terminal la commande suivante:
 ```bash
 launch_billard.py 
 ```
-## Soutenance :loudspeaker:
+## :loudspeaker: Soutenance 
 Le support de présentation pour la présentation est accessible [ici](WorkingDocs/presentation.pdf) :point_left:
-## Détails du projet :construction:
+## :construction: Détails du projet 
 ### Analyse et Conception du produit
 Le travail préalable servant à établir les objectifs de notre projet est amorcé par :
 - une étude du lanquage omniprésent ou [ubiquitous language](WorkingDocs/ubiquitous%20language.md) dans le but de déterminer un vocabulaire commun
