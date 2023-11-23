@@ -1,7 +1,7 @@
 ## Coding Week 2023-2024 - Billard Interactif Techniquement Exploitable
 
 ## :clipboard: Description 
-Simulation et affichage d'un billard interactif :8ball:
+:8ball: Simulation et affichage d'un billard interactif
 
 ## :construction_worker: Membres 
 - Montoya Samuel
@@ -65,17 +65,17 @@ Intégrer la possibilité de jouer une partie de billard français/américain/an
     - :heavy_check_mark: Fonctionnalité 9 : lancement d’un coup
 
 #### Objectif 2 : un jeu complet
-- **Sprint 7 : Utilisation d’un GUI**
+- **:white_check_mark: Sprint 5 : Utilisation d’un GUI**
     - :heavy_check_mark: Fonctionnalité 10 : mise en place d'une interface graphique pour lancer un coup "in-game"
     - :heavy_check_mark: Fonctionnalité 11 : gestion d'une partie de billard
 
 #### Objectif 3 : Ajout des rotations dans notre _"moteur physique"_
-- **:white_check_mark: [Sprint 5](WorkingDocs/gif/objectif3-pymunk.gif) : Rotation dans les axes du plan (x et y) sous `pymunk`**
+- **:white_check_mark: [Sprint 6](WorkingDocs/gif/objectif3-pymunk.gif) : Rotation dans les axes du plan (x et y) sous `pymunk`**
     - :heavy_check_mark: Fonctionnalité 12 : Création d'un billard fonctionnel avec `pymunk`
     - :heavy_check_mark: Fonctionnalité 13 : Prise en compte de la rotation de la boule sur ses axes x et y
     - :heavy_check_mark: Fonctionnalité 14 : Ajout des forces de frottement et de résistance au roulement avec le tapis
-- **Sprint 6 : Rotation sur trois axes pour notre _"moteur physique"_**
-    - :heavy_check_mark: Fonctionnalité 13' : Portage de la rotation de la boule sur ses axes x et y
-    - :heavy_check_mark: Fonctionnalité 14' : Portage des forces de frottement et de résistance au roulement avec le tapis
-    - Fonctionnalité 15 : Ajout de la rotation suivant l'axe z (modification des rebonds)
-    - Fonctionnalité 16 : Possibilité de frapper la boule blanche pour produire un effet (point d'impact paramétrable)
+- **Sprint 7 : Rotation sur trois axes pour notre _"moteur physique"_**
+    - :heavy_check_mark: Fonctionnalité 13bis : Portage de la rotation de la boule sur ses axes x et y
+    - :heavy_check_mark: Fonctionnalité 14bis : Portage des forces de frottement et de résistance au roulement avec le tapis
+    - :hourglass_flowing_sand: Fonctionnalité 15 : Ajout de la rotation suivant l'axe z (modification des rebonds)
+    - :hourglass_flowing_sand: Fonctionnalité 16 : Possibilité de frapper la boule blanche pour produire un effet (point d'impact paramétrable)
