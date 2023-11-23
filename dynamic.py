@@ -71,7 +71,7 @@ def update_ball_with_exit(pool, ball, new_pos, new_speed):
         ball.update_position(np.array([0.1 + 1.8 * ball.radius * ball.number, pool.board.length + 0.1]))
         ball.update_speed(np.array([0, 0]))
         if ball.number == 0:
-            print("FIN DE PARTIE")
+            print("La boule blanche est sortie")
     else:
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
