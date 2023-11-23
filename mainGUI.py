@@ -168,8 +168,6 @@ class App(tk.Tk):
         self.quit()
         self.destroy()
 
-
-
 if __name__ == "__main__":
     app = App()
     app.mainloop()
