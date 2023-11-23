@@ -20,9 +20,13 @@ def trace(billard, dynamic_func, queue):
     fig = plt.figure("Billard Interactif Techniquement Exploitable")
     ax = fig.add_subplot()
     ax.set_aspect('equal')
+    plt.axis("off")
     # Affichage du billard vide sur le graphique
     ax.set_xlim(-0.1 * board.corners[2][0], 1.1 * board.corners[2][0])
-    ax.set_ylim(-0.1 * board.corners[2][1], 1.1 * board.corners[2][1])
+    ax.set_ylim(-0.1 * board.corners[2][0], board.corners[2][1] +0.1 * board.corners[2][0])
+    ax.add_patch(plt.Rectangle((-0.1 * board.corners[2][0], -0.1 * board.corners[2][0]),
+                               1.2 * board.corners[2][0], board.corners[2][1] +0.2 * board.corners[2][0],
+                               edgecolor="black", facecolor="#774634", fill=True))
     ax.add_patch(plt.Rectangle((0, 0), board.corners[2][0], board.corners[2][1],
                                edgecolor="black", facecolor="#32a852", fill=True))
     # Création des trous
