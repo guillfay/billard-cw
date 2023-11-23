@@ -44,17 +44,12 @@ class InputFrame(ttk.Frame):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=1)
-
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
-        self.rowconfigure(3, weight=1)
-        self.rowconfigure(4, weight=1)
-        self.rowconfigure(5, weight=1)
-        self.rowconfigure(6, weight=1)
+        # Création des colonnes
+        for k in range(3):
+            self.columnconfigure(k, weight=1)
+        # Création des lignes
+        for k in range(7):
+            self.rowconfigure(k, weight=1)
 
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
@@ -145,7 +140,7 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 144)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
         # Création de la partie configuration
@@ -156,7 +151,7 @@ class App(tk.Tk):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
         self.queue = queue
-        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 144)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
     def tirer(self, energie):

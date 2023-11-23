@@ -165,7 +165,7 @@ class Pool:
                     return [pos_b, pos_1, pos_2]
 
                 liste_pos = construct_liste_pos()
-                liste_color = ['r', 'w', 'w']
+                liste_color = ['w', 'w', 'k']
             case _:
                 raise Exception("Billard '" + str(type_billard) + "' non géré")
 

@@ -190,7 +190,7 @@ def update_speed_2collidedBalls(pool, index):
 # --------------------------------------FONCTIONNALITE 7--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def friction(pool, delta_t, alpha=0.95, v_min=0.01):
+def friction(pool, delta_t, alpha=0.8, v_min=0.01):
     """Met à jour la vitesse de toutes les boules de sorte que toutes les secondes
     elles perdent alpha (en pourcentage) de leur vitesse. De plus,
     elle arrête les boules qui ont une vitesse inférieure en norme a v_min"""
