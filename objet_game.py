@@ -130,7 +130,7 @@ class Pool:
                     x1, y1 = width / 2, length * 3 / 4
                     pos_1 = [x1, y1]
                     liste_pos.append(pos_1)
-                    eps = radius / 100
+                    eps = radius / 4
                     for k in range(2, 4):
                         y = y1 + eps + 2 * radius * np.cos(30 * np.pi / 180)
                         x = x1 - 2 * eps - 2 * radius * np.sin(30 * np.pi / 180) + k % 2 * 2 * (radius + eps)

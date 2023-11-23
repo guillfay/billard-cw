@@ -66,11 +66,13 @@ class Board:
 
 
 class Pool:
-    def __init__(self, number_of_balls, length=2.54, width=1.27):
+    def __init__(self, number_of_balls, length=2.54, width=1.27,ball_radius = 1, ball_mass = 1):
+        self.ball_radius = ball_radius
+        self.ball_mass = ball_mass
         self.board = Board(length=length, width=width)
         self.balls = {}
         for i in range(number_of_balls):
-            self.balls[i] = Ball(i, self.board.middle)
+            self.balls[i] = Ball(i, self.board.middle,ball_radius,ball_mass)
         self.number_of_balls = number_of_balls
 
     def __str__(self):
