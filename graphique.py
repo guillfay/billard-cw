@@ -1,13 +1,15 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.transforms import Affine2D
 from matplotlib.animation import FuncAnimation
+from objet_game import *
 
 
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def trace(billard, dynamic_func):
+def trace(billard, dynamic_func, queue):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
     plt.close()
@@ -31,21 +33,26 @@ def trace(billard, dynamic_func):
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
         ax.add_patch(circle)
+    # Affichage de la queue
+    rectangle = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
+    ax.add_patch(rectangle)
     # Affichage de la frame
     frame_template = "frame = %i"
     frame_text = ax.text(0.01, 1.01, "", transform=ax.transAxes)
-
-    queue = patches.Rectangle((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]), 0.02, -10)
-    ax.add_patch(queue)
-
+    
     def update(frame):
-        """Fonction mettant à jour la position des boules"""
+        """Fonction mettant à jour la position des boules et de la queue"""
         # On appelle la fonction de mise à jour des positions des boules
         dynamic_func()
         for key in balls:
             circles[key].set_center(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
-        return circles, frame_text
+        # On met à jour la position et l'angle de la queue
+        angle = queue.angle
+        rectangle.set_xy((billard.balls[0].position[0] - 0.02 / 2, billard.balls[0].position[1]))
+        transform = Affine2D().rotate_deg_around(billard.balls[0].position[0], billard.balls[0].position[1], -angle) + ax.transData
+        rectangle.set_transform(transform)
+        return circles, frame_text, rectangle
 
     ani = FuncAnimation(fig, update, interval=1000 / 60, cache_frame_data=False)
     return fig, ani
