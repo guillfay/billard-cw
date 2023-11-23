@@ -1,5 +1,5 @@
 import numpy as np
-import numpy.linalg as linalg
+
 
 class Ball:
     def __init__(self, number, initial_position, radius, mass, state, color):
@@ -12,7 +12,7 @@ class Ball:
         self.mass = mass  # en kg
         self.position = initial_position
         self.speed = np.array([0, 0])
-        self.state = state  # un booleen pour savoir si la boule est en jeu
+        self.state = state  # un booléen pour savoir si la boule est en jeu
         self.color = color
 
     def set_size(self, new_radius, new_mass):
@@ -174,7 +174,7 @@ class Pool:
         for i in range(0, number_of_balls):
             self.balls[i] = Ball(i, np.array(liste_pos[i]), radius, mass, True, liste_color[i])
         self.number_of_balls = number_of_balls
-     
+
     def __str__(self):
         chaine = ""
         for i in range(self.number_of_balls):
@@ -184,17 +184,18 @@ class Pool:
 
 class Cue:
     def __init__(self, mass, angle=0):
+        """Création d'une queue de billard avec une masse en kg et un angle en °"""
         self.mass = mass
         self.angle = angle
 
-    def frappe(self, energie, angle, ball):
-        """Energie en J, angle en rad par rapport à l'axe x"""
+    def frappe(self, energie, ball):
+        """Energie en J, l'attribut angle est convertie en radian dans le calcul"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
-        ball.update_speed(np.array([np.sin(angle*np.pi/180) * v_ball, np.cos(angle*np.pi/180) * v_ball]))
-     
+        ball.update_speed(np.array([np.sin(self.angle*np.pi/180) * v_ball, np.cos(self.angle*np.pi/180) * v_ball]))
+        
     def update_angle(self, angle):
-        self.angle=angle
+        self.angle = angle
 
 # billard = Pool('americain')
 # print(billard.balls[0].radius)

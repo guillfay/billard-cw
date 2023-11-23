@@ -8,7 +8,6 @@ from dynamic import *
 
 
 
-
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 13-------------------------------------
 # --------------------------------------------------------------------------------------------
@@ -51,7 +50,7 @@ class InputFrame(ttk.Frame):
         # Création des lignes
         for k in range (11):
             self.rowconfigure(k, weight=1)
-            
+
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
         self.__create_widgets(self.valider, billard)
@@ -98,8 +97,6 @@ class InputFrame(ttk.Frame):
         
         self.angle = float(self.angle_entry.get())
 
-
-
     def valider(self):
         """Fonction affichant un nouveau billard fixe"""
         choix = float(self.choix.get())
@@ -114,13 +111,15 @@ class InputFrame(ttk.Frame):
             case _:
                 raise Exception("problème avec la valeur de <choix>")
         self.change_pool_func(new_billard, Cue(0.2))
-        self.change_pool_func(new_billard, Cue(0.2))
 
     def tirer(self):
-        self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
-
+        """ Convertion de l'energie de % en J (100%=1J ici)"""
+        self.app_tirer_func(self.force_entry.get()/100)
+        
     def angle_test(self, angle):
         self.app_angle_func(float(angle))
+
+
 
 class App(tk.Tk):
     """Classe permettant de lancer l'affichage"""
@@ -137,7 +136,7 @@ class App(tk.Tk):
 
         # Initialisation du billard
         self.billard = Pool("francais")
-        self.queue = Cue(0.2)
+        self.queue = Cue(0.4)
         self.angle = 0
 
         self.__create_widgets()
@@ -145,30 +144,27 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 0.0025, 0.01)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
         # Création de la partie configuration
         self.input_frame = InputFrame(self, self.billard, self.change_pool_on_input, self.tirer, self.new_angle)
         self.input_frame.grid(column=1, row=0)
-        
 
     def change_pool_on_input(self, billard, queue):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
-        self.queue=queue
-        partial_update_pool = partial(update_pool, self.billard, 0.0025, 0.01)
+        self.queue = queue
+        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
-    def tirer(self, energie, angle):
+    def tirer(self, energie):
         """Fonction permettant d'effectuer un tir"""
-        self.queue.frappe(energie=energie, angle=angle, ball=self.billard.balls[0])
-    
+        self.queue.frappe(energie=energie, ball=self.billard.balls[0])
+        
     def new_angle(self, angle):
         """Fonction permettant de changer l'angle de la queue"""
         self.queue.update_angle(angle)
-
-
 
     def quit_me(self):
         """Je ne sais pas pourquoi il faut rajouter ça, mais ça marche.
