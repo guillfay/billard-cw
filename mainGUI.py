@@ -7,6 +7,7 @@ from graphique import *
 from dynamic import *
 
 
+
 # --------------------------------------------------------------------------------------------
 # --------------------------------------FONCTIONNALITE 13-------------------------------------
 # --------------------------------------------------------------------------------------------
@@ -43,12 +44,18 @@ class InputFrame(ttk.Frame):
         super().__init__(master)
 
         # Création des colonnes et lignes pour les objets
-        # Création des colonnes
-        for k in range (3):
-            self.columnconfigure(k, weight=1)
-        # Création des lignes
-        for k in range (11):
-            self.rowconfigure(k, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, weight=1)
+        self.rowconfigure(3, weight=1)
+        self.rowconfigure(4, weight=1)
+        self.rowconfigure(5, weight=1)
+        self.rowconfigure(6, weight=1)
+        self.rowconfigure(7, weight=1)
 
         # Enregistrement des fonctions de màj
         self.change_pool_func = change_pool_func
@@ -82,7 +89,7 @@ class InputFrame(ttk.Frame):
         self.masse_entry = ttk.Entry(frame1)
         self.masse_entry.grid(column=1, row=3)
         self.masse_entry.insert(0, self.balls[0].mass)
-        self.validate_button = tk.Button(frame1, text="Nouveau billard", activebackground="green", fg="green",
+        self.validate_button = tk.Button(frame1, text="Valider paramètres", activebackground="green", fg="green",
                                          command=valider)
         self.validate_button.grid(column=0, row=4, columnspan=2)
 
@@ -109,7 +116,7 @@ class InputFrame(ttk.Frame):
                 new_billard = Pool("anglais")
             case _:
                 raise Exception("problème avec la valeur de <choix>")
-        self.change_pool_func(new_billard, Cue(0.2))
+        self.change_pool_func(new_billard, Cue(0.4))
 
     def tirer(self):
         """ Convertion de l'energie de % en J (100%=1J ici)"""
@@ -137,13 +144,13 @@ class App(tk.Tk):
         self.billard = Pool("francais")
         self.queue = Cue(0.4)
         self.angle = 0
-
+        
         self.__create_widgets()
 
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 1 / 144)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
         # Création de la partie configuration
@@ -154,7 +161,7 @@ class App(tk.Tk):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
         self.queue = queue
-        partial_update_pool = partial(update_pool, self.billard, 1 / 144)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
     def tirer(self, energie):
