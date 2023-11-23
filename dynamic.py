@@ -216,5 +216,5 @@ if __name__ == "__main__" :
     billard = objet_game.Pool('americain')
     billard.balls[0].update_speed(np.array([0,2]))
 
-    ani = graphique.trace(billard,partial(update_pool,billard,0.02))
+    ani = graphique.trace(billard, partial(update_pool, billard, 0.02), objet_game.Cue(0.2) )
     plt.show()

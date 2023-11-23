@@ -149,7 +149,7 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
         # Création de la partie configuration
@@ -160,12 +160,12 @@ class App(tk.Tk):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
         self.queue = queue
-        partial_update_pool = partial(update_pool, self.billard, 1000 / 60)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
     def tirer(self, energie, angle):
         """Fonction permettant d'effectuer un tir"""
-        self.queue.frappe(energie=energie / 100000000, angle=angle*np.pi/180, ball=self.billard.balls[0])
+        self.queue.frappe(energie=energie / 100, angle=angle*np.pi/180, ball=self.billard.balls[0])
         
     def new_angle(self, angle):
         """Fonction permettant de changer l'angle de la queue"""
