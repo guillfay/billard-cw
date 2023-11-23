@@ -184,11 +184,12 @@ class Pool:
 
 class Cue:
     def __init__(self, mass, angle=0):
+        """Création d'une queue de billard avec une masse en kg et un angle en °"""
         self.mass = mass
         self.angle = angle
 
     def frappe(self, energie, ball):
-        """Energie en J, angle en rad par rapport à l'axe x"""
+        """Energie en J, l'attribut angle est convertie en radian dans le calcul"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
         ball.update_speed(np.array([np.sin(self.angle*np.pi/180) * v_ball, np.cos(self.angle*np.pi/180) * v_ball]))
