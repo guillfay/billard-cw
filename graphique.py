@@ -3,7 +3,8 @@ import matplotlib.patches as patches
 from matplotlib.transforms import Affine2D
 from matplotlib.transforms import Affine2D
 from matplotlib.animation import FuncAnimation
-from objet_game import *
+import shapely.geometry as sg
+import descartes
 from objet_game import *
 
 
@@ -11,6 +12,18 @@ from objet_game import *
 # --------------------------------------FONCTIONNALITE 2--------------------------------------
 # --------------------------------------------------------------------------------------------
 
+def boule_rayee(ball):
+    """Permet de générer les 2 patchs composant une boule rayée"""
+    a = sg.Point(ball.position[0],ball.position[1]).buffer(ball.radius)
+    coords = ((ball.position[0]-ball.radius,ball.position[1]+0.7*ball.radius),
+              (ball.position[0]+ball.radius,ball.position[1]+0.7*ball.radius),
+              (ball.position[0]+ball.radius,ball.position[1]-0.7*ball.radius),
+              (ball.position[0]-ball.radius,ball.position[1]-0.7*ball.radius))
+    b = sg.Polygon(coords)
+    white_part = a.difference(b)
+    colored_part = a.intersection(b)
+    return [descartes.PolygonPatch(white_part, fc='w', ec='w'), descartes.PolygonPatch(colored_part, fc=ball.color, ec=ball.color)]
+                
 def trace(billard, dynamic_func, queue):
     """Fonction générant le billard animé"""
     # Pour fermer des plots potentiellement existants
@@ -42,22 +55,29 @@ def trace(billard, dynamic_func, queue):
         ax.text(0.1, board.length+pos_y, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Création d'un dictionnaire des boules et ajout sur le graphique
     if billard.type_billard != 'americain':
-        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
-        for circle in circles.values():
-            ax.add_patch(circle)
+        circles = {key: [plt.Circle(tuple(ball.position), ball.radius, color=ball.color)] for key, ball in balls.items()}
     # Pour le billard américain, on ajoute des numéros et parfois des bandes blanches
     else:
         nombre_affiche = ['','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
         bande_affiche = [False,True,False,True,True,False,False,False,True,False,True,True,False,True,False,False]
-        def color(ball):
+        circles = {}
+        def american_ball(key):
+            ball = balls[key]
             if bande_affiche[ball.number]:
-                return 'w'
+                circles[key] = boule_rayee(ball)
             else:
-                return ball.color
-        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=color(ball)) for key, ball in balls.items()}
-        for circle in circles.values():
-            ax.add_patch(circle)
+                circles[key] = [plt.Circle(tuple(ball.position), ball.radius, color=ball.color)]
+        for key in balls:
+            american_ball(key)
         labels={key: ax.text(ball.position[0], ball.position[1], nombre_affiche[ball.number], ha='center', va='center', fontsize=5, color='white')  for key, ball in balls.items()}
+    # On affiche toutes les boules
+    patch_list = []
+    for circle in circles.values():
+        for i in range(len(circle)):
+            if range(len(circle))==2:
+                patch_list.append(ax.add_patch(circle[i]))
+            else:
+                ax.add_patch(circle[i])
     # Affichage de la queue
     rectangle = patches.Rectangle((balls[0].position[0] - balls[0].radius / 2, balls[0].position[1]), 0.02, -1, color='brown')
     ax.add_patch(rectangle)
@@ -70,9 +90,18 @@ def trace(billard, dynamic_func, queue):
         # On appelle la fonction de mise à jour des positions des boules
         dynamic_func()
         for key in balls:
-            circles[key].set_center(tuple(balls[key].position))
+            ball = balls[key]
+            if len(circles[key])==1:
+                circles[key][0].set_center(tuple(balls[key].position))
+            else:
+                circles[key][0].remove()
+                circles[key][1].remove()
+                circles[key][0] = boule_rayee(ball)[0]
+                circles[key][1] = boule_rayee(ball)[1]
             if billard.type_billard == 'americain' and key!=0:
                 labels[key].set_position(tuple(balls[key].position))
+            for i in range(len(circles[key])):
+                ax.add_patch(circles[key][i])
         frame_text.set_text(frame_template % frame)
         angle = queue.angle
         if all(elements for elements in [np.all(billard.balls[k].speed==0) for k in range(billard.number_of_balls)]):

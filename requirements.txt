@@ -1,3 +1,7 @@
 numpy
 pytest
 matplotlib
+functools
+tkinter
+descartes
+shapely==1.8.5
