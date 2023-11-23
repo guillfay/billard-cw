@@ -150,8 +150,8 @@ class Pool:
                     return liste_pos
 
                 liste_pos = construct_liste_pos()
-                liste_color = ['w', 'y', 'b', 'r', 'purple', 'orange', 'g', 'brown', 'k', 'y', 'b', 'r', 'purple',
-                               'orange', 'g', 'brown']
+                liste_color = ['w', 'y', 'brown', 'purple', 'brown', 'k', 'y', 'g',
+                               'b','r','g', 'r', 'b', 'orange', 'purple', 'orange'] 
             case 'francais':
                 number_of_balls = 3
                 length, width = 3.1, 1.68
@@ -165,7 +165,7 @@ class Pool:
                     return [pos_b, pos_1, pos_2]
 
                 liste_pos = construct_liste_pos()
-                liste_color = ['r', 'w', 'w']
+                liste_color = ['w', 'w', 'k']
             case _:
                 raise Exception("Billard '" + str(type_billard) + "' non géré")
 

@@ -68,8 +68,9 @@ def update_positions_bounce(pool, delta_t):
 def update_ball_with_exit(pool, ball, new_pos, new_speed):
     '''Place les boules sorties au dessus du billard.'''
     if not ball.state:
-        # ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
-        ball.update_position(np.array([0.1 + 1.8 * ball.radius * ball.number, pool.board.length + 0.1]))
+        nombre_affiche = ['0','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
+        ball.update_position(np.array([1.1 * pool.board.corners[2][0] -(ball.radius *(1 +2 * int(nombre_affiche[ball.number]))),
+                                       pool.board.corners[2][1] +0.15 * pool.board.corners[2][0] -0.1 -ball.radius]))
         if ball.number == 0:
             ball.update_position(np.array([-10,-10]))
         ball.update_speed(np.array([0, 0]))
@@ -189,7 +190,7 @@ def update_speed_2collidedBalls(pool, index):
 # --------------------------------------FONCTIONNALITE 7--------------------------------------
 # --------------------------------------------------------------------------------------------
 
-def friction(pool, delta_t, alpha=0.95, v_min=0.01):
+def friction(pool, delta_t, alpha=0.8, v_min=0.01):
     """Met à jour la vitesse de toutes les boules de sorte que toutes les secondes
     elles perdent alpha (en pourcentage) de leur vitesse. De plus,
     elle arrête les boules qui ont une vitesse inférieure en norme a v_min"""
