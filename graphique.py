@@ -41,11 +41,22 @@ def trace(billard, dynamic_func, queue):
                 pos_y=0.2
         ax.text(0.1, board.length+pos_y, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Création d'un dictionnaire des boules et ajout sur le graphique
-    circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
-    for circle in circles.values():
-        ax.add_patch(circle)
-    if billard.type_billard == 'americain':
+    if billard.type_billard != 'americain':
+        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
+        for circle in circles.values():
+            ax.add_patch(circle)
+    # Pour le billard américain, on ajoute des numéros et parfois des bandes blanches
+    else:
         nombre_affiche = ['','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
+        bande_affiche = [False,True,False,True,True,False,False,False,True,False,True,True,False,True,False,False]
+        def color(ball):
+            if bande_affiche[ball.number]:
+                return 'w'
+            else:
+                return ball.color
+        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=color(ball)) for key, ball in balls.items()}
+        for circle in circles.values():
+            ax.add_patch(circle)
         labels={key: ax.text(ball.position[0], ball.position[1], nombre_affiche[ball.number], ha='center', va='center', fontsize=5, color='white')  for key, ball in balls.items()}
     # Affichage de la queue
     rectangle = patches.Rectangle((balls[0].position[0] - balls[0].radius / 2, balls[0].position[1]), 0.02, -1, color='brown')
