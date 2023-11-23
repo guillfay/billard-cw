@@ -66,12 +66,13 @@ def update_positions_bounce(pool, delta_t):
 
 
 def update_ball_with_exit(pool, ball, new_pos, new_speed):
+    '''Place les boules sorties au dessus du billard.'''
     if not ball.state:
         # ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
         ball.update_position(np.array([0.1 + 1.8 * ball.radius * ball.number, pool.board.length + 0.1]))
-        ball.update_speed(np.array([0, 0]))
         if ball.number == 0:
-            print("FIN DE PARTIE")
+            ball.update_position(np.array([-10,-10]))
+        ball.update_speed(np.array([0, 0]))
     else:
         ball.update_position(new_pos)
         ball.update_speed(new_speed)
@@ -123,6 +124,8 @@ def impact_time(ball1, ball2):
     b = 2 * Delta_X * Delta_Vx + 2 * Delta_Y * Delta_Vy
     c = Delta_X ** 2 + Delta_Y ** 2 - square_radius
     if a == 0:
+        if b == 0 :
+            return 0
         sol1 = -c / b
         sol2 = sol1
     else:
@@ -131,9 +134,9 @@ def impact_time(ball1, ball2):
         sol1 = (-b + sqrt_delta) / (2 * a)
         sol2 = (-b - sqrt_delta) / (2 * a)
     if sol1 < 0:
-        raise ValueError("Sol 1 est négative ")
+        raise ValueError("Erreur de calcul. Trop de collisions sur l'itération.")
     if sol2 < 0:
-        raise ValueError("Sol 2 est négative ")
+        raise ValueError("Erreur de calcul. Trop de collisions sur l'itération.")
     return min(sol1, sol2)  # On garde la plus petite solution positive
 
 
@@ -227,21 +230,29 @@ def update_pool(pool, delta_t):
         t_0, collided_balls = first_impact(pool, potential_collisions)  # On extrait le moment du premier choc
         if t_0 < delta_t:
             friction(pool, t_0, alpha=0.3, v_min=0.05)
-            update_positions_bounce(pool, t_0)  # On update les boules au moments du premier choc
+            update_positions_bounce(pool, t_0)  # On update les boules au moments du premier choc 
             update_speed_2collidedBalls(pool, collided_balls)
             update_pool(pool, delta_t - t_0)
     else:
         friction(pool, delta_t, alpha=0.3, v_min=0.05)
         update_positions_bounce(pool, delta_t)
+    if not(pool.balls[0].state):
+        if all(elements for elements in [np.all(pool.balls[k].speed==0) for k in range(pool.number_of_balls)]):
+            pool.balls[0].update_position(np.array(pool.board.middle))
+            pool.balls[0].update_speed(np.array([0, 0]))
+            pool.balls[0].state = True
+        
     return at_equilibrium(pool)
 
 
 def check_exit(pool, ball):
+    number = ball.number
     pos = ball.position
     pockets = pool.board.get_pockets()
     for j in range(len(pockets)):
         if np.linalg.norm(pos - pockets[j]) < 2 * ball.radius:
-            ball.update_state(False)
+            pool.balls[number].update_state(False)
+
 
 
 if __name__ == "__main__":

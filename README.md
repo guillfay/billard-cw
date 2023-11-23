@@ -10,27 +10,36 @@ Simulation et affichage d'une billard interactif
 - Noël-Bertin Paul
 - Talbaut Gatien
 
-## Libraries
+## Bibliothèques
 
 Installation des bibliothèques:
 ```bash
 pip install -r requirements.txt
 ```
+## Lancement de la simulation
+Après avoir installé les bibliothèques requises, taper dans un terminal la commande suivante:
+```bash
+launch_billard.py 
+```
 
 ## Détails du projet
+### Analyse et Conception du produit
+Le travail préalable servant à établir les objectifs de notre projet est amorcé par :
+- une étude du lanquage omniprésent ou [ubiquitous language](WorkingDocs/ubiquitous%20language.md) dans le but de déterminer un vocabulaire commun
+- une analyse des besoins d'un utilisateur en imagninant des scénarios d'utilisation et [user stories](WorkingDocs/user%20story.md)
+
 ### Analyse du problème et des principales fonctionnalités MVP :
 - Permettre à l’utilisateur d'interagir avec le billard et régler un tir : choix de la direction et de la puissance du coup
-- Permettre la simulation et la visualisation du coup (en 2D vue du dessus) en fonction des paramètres renseignés par l’utilisateur
+- Permettre la simulation et la visualisation du coup (en 2D vue du dessus) en fonction des paramètres renseignés par l’utilisateur : déplacements, rebonds, collisions
 - Afficher la simulation sous la forme d’une animation à l’aide du module matplotlib
-- Permettre d’afficher les différents paramètres connus lors de la simulation
 
 ### Fonctionnalités supplémentaires :
-- Ajouter d’autres boules et gérer les chocs entre ces dernières (chocs élastiques ou non)
+ATTENTION A RELIRE SVP
 - Permettre le choix du point d’impact sur la boule frappée avec la queue (affichage de la boule vue depuis la queue sur un 2ème affichage)
 - Appliquer les conséquences des différents effets causés par ce choix (rotation de la boule, etc.) à la simulation (effets : rétro, coulé, etc.)
-- Intégrer la possibilité de jouer une partie de billard français / compter des points (pas le plus important, sort un peu du côté simulation mais est une fonctionnalité sympa et pas trop dure à implémenter)
-- Ajouter des trous à la table de billard (pour pouvoir simuler des coups de billard anglais ou américain)
-- Intégrer la possibilité de jouer une partie de billard anglais/américain
+- Modéliser des frottements (résistance au roulement et au glissement)
+Intégrer la possibilité de jouer une partie de billard français/américain/anglais
+- Ajouter des trous à la table de billard 
 
 ### Détails des fonctionnalités : 
 #### Objectif 1 : MVP
@@ -48,11 +57,11 @@ pip install -r requirements.txt
     - :heavy_check_mark: Fonctionnalité 8 : utilisation du module argparse
     - :heavy_check_mark: Fonctionnalité 9 : écriture d’un programme principal
     - :heavy_check_mark: Fonctionnalité 10 : lancement d’un coup
-#### Objectif 2 : Un billard avec `pymunk`
-- **:white_check_mark: Sprint 5 : Représentation du billard avec `pymunk`**
-    - :heavy_check_mark: Fonctionnalité 11 : Création d'un billard fonctionnel avec `pymunk`
-    - :heavy_check_mark: Fonctionnalité 12 : prise en compte de la rotation de la boule    
-#### Objectif 3 : un jeu complet
+#### Objectif 2 : un jeu complet
 - **:white_check_mark: Sprint 6 : Utilisation d’un GUI**
     - :heavy_check_mark: Fonctionnalité 13 : mise en place d'une interface graphique pour lancer un coup "in-game"
     - Fonctionnalité 14 : gestion d'une partie de billard
+#### Objectif 3 : Un billard avec `pymunk`
+- **:white_check_mark: Sprint 5 : Représentation du billard avec `pymunk`**
+    - :heavy_check_mark: Fonctionnalité 11 : Création d'un billard fonctionnel avec `pymunk`
+    - :heavy_check_mark: Fonctionnalité 12 : prise en compte de la rotation de la boule    
