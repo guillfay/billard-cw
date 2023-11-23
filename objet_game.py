@@ -12,7 +12,7 @@ class Ball:
         self.mass = mass  # en kg
         self.position = initial_position
         self.speed = np.array([0, 0])
-        self.state = state  # un booleen pour savoir si la boule est en jeu
+        self.state = state  # un booléen pour savoir si la boule est en jeu
         self.color = color
 
     def set_size(self, new_radius, new_mass):
@@ -187,14 +187,14 @@ class Cue:
         self.mass = mass
         self.angle = angle
 
-    def frappe(self, energie, angle, ball):
+    def frappe(self, energie, ball):
         """Energie en J, angle en rad par rapport à l'axe x"""
         v_cue = np.sqrt(2 * energie / self.mass)
         v_ball = self.mass / ball.mass * v_cue
-        ball.update_speed(np.array([np.sin(angle) * v_ball, np.cos(angle) * v_ball]))
+        ball.update_speed(np.array([np.sin(self.angle*np.pi/180) * v_ball, np.cos(self.angle*np.pi/180) * v_ball]))
         
     def update_angle(self, angle):
-        self.angle=angle
+        self.angle = angle
 
 # billard = Pool('americain')
 # print(billard.balls[0].radius)

@@ -119,7 +119,7 @@ class InputFrame(ttk.Frame):
         self.change_pool_func(new_billard, Cue(0.2))
 
     def tirer(self):
-        self.app_tirer_func(self.force_entry.get(), self.angle_entry.get())
+        self.app_tirer_func(self.force_entry.get())
         
     def angle_test(self, angle):
         self.app_angle_func(float(angle))
@@ -163,9 +163,9 @@ class App(tk.Tk):
         partial_update_pool = partial(update_pool, self.billard, 1 / 60)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
-    def tirer(self, energie, angle):
+    def tirer(self, energie):
         """Fonction permettant d'effectuer un tir"""
-        self.queue.frappe(energie=energie / 100, angle=angle*np.pi/180, ball=self.billard.balls[0])
+        self.queue.frappe(energie=energie / 100, ball=self.billard.balls[0])
         
     def new_angle(self, angle):
         """Fonction permettant de changer l'angle de la queue"""
