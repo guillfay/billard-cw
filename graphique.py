@@ -44,9 +44,9 @@ def trace(billard, dynamic_func, queue):
     circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
     for circle in circles.values():
         ax.add_patch(circle)
-    labels={key: ax.text(ball.position[0], ball.position[1], str(ball.number), ha='center', va='center', fontsize=5, color='white')  for key, ball in balls.items()}
-    for label in labels.values():
-        label
+    if billard.type_billard == 'americain':
+        nombre_affiche = ['','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
+        labels={key: ax.text(ball.position[0], ball.position[1], nombre_affiche[ball.number], ha='center', va='center', fontsize=5, color='white')  for key, ball in balls.items()}
     # Affichage de la queue
     rectangle = patches.Rectangle((balls[0].position[0] - balls[0].radius / 2, balls[0].position[1]), 0.02, -1, color='brown')
     ax.add_patch(rectangle)
@@ -60,7 +60,8 @@ def trace(billard, dynamic_func, queue):
         dynamic_func()
         for key in balls:
             circles[key].set_center(tuple(balls[key].position))
-            labels[key].set_position(tuple(balls[key].position))
+            if billard.type_billard == 'americain' and key!=0:
+                labels[key].set_position(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
         angle = queue.angle
         if all(elements for elements in [np.all(billard.balls[k].speed==0) for k in range(billard.number_of_balls)]):
