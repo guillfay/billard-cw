@@ -79,11 +79,11 @@ class InputFrame(ttk.Frame):
         self.balls = billard.balls
 
         self.choix1_entry = ttk.Radiobutton(frame1, text="Français", variable=self.choix, value=1)
-        self.choix1_entry.grid(column=0, row=0)
+        self.choix1_entry.grid(column=1, row=0)
         self.choix2_entry = ttk.Radiobutton(frame1, text="Américain", variable=self.choix, value=2)
-        self.choix2_entry.grid(column=0, row=1)
+        self.choix2_entry.grid(column=1, row=1)
         self.choix3_entry = ttk.Radiobutton(frame1, text="Anglais", variable=self.choix, value=3)
-        self.choix3_entry.grid(column=0, row=2)
+        self.choix3_entry.grid(column=1, row=2)
         self.validate_button = tk.Button(frame1, text="Valider paramètres", activebackground="green", fg="green",
                                          command=valider)
         self.validate_button.grid(column=0, row=3)

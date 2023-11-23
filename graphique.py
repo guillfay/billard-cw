@@ -41,10 +41,19 @@ def trace(billard, dynamic_func, queue):
                 pos_y=0.2
         ax.text(-0.08 * board.corners[2][0], board.corners[2][1] +0.15 * board.corners[2][0] -0.1, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Création d'un dictionnaire des boules et ajout sur le graphique
-    if billard.type_billard != 'americain':
+    # Pour le billard anglais on ajoute simplement les 16 boules
+    if billard.type_billard == 'anglais':
         circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
         for circle in circles.values():
             ax.add_patch(circle)
+    # Pour le billard français on ajoute blanche, blanche pointée et noire
+    elif billard.type_billard == 'francais':
+        couleur_affichee = ['w','w','k']
+        nombre_affiche = ['','●','']
+        circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=couleur_affichee[ball.number]) for key, ball in balls.items()}
+        for circle in circles.values():
+            ax.add_patch(circle)
+        labels={key: ax.text(ball.position[0], ball.position[1], nombre_affiche[ball.number], ha='center', va='center', fontsize=5, color='black')  for key, ball in balls.items()}
     # Pour le billard américain, on ajoute des numéros
     else:
         nombre_affiche = ['','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
@@ -66,6 +75,8 @@ def trace(billard, dynamic_func, queue):
         for key in balls:
             circles[key].set_center(tuple(balls[key].position))
             if billard.type_billard == 'americain' and key!=0:
+                labels[key].set_position(tuple(balls[key].position))
+            if billard.type_billard == 'francais' and key==1:
                 labels[key].set_position(tuple(balls[key].position))
         frame_text.set_text(frame_template % frame)
         angle = queue.angle
