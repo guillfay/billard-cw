@@ -39,16 +39,15 @@ def trace(billard, dynamic_func, queue):
                 pos_y=0.05
             else:
                 pos_y=0.2
-        ax.text(0.1, board.length+pos_y, "Boules hors-jeu", va='center', fontsize=6, color='black')
+        ax.text(-0.08 * board.corners[2][0], board.corners[2][1] +0.15 * board.corners[2][0] -0.1, "Boules hors-jeu", va='center', fontsize=6, color='black')
     # Création d'un dictionnaire des boules et ajout sur le graphique
     if billard.type_billard != 'americain':
         circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
         for circle in circles.values():
             ax.add_patch(circle)
-    # Pour le billard américain, on ajoute des numéros et parfois des bandes blanches
+    # Pour le billard américain, on ajoute des numéros
     else:
         nombre_affiche = ['','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
-        bande_affiche = [False,True,False,True,True,False,False,False,True,False,True,True,False,True,False,False]
         circles = {key: plt.Circle(tuple(ball.position), ball.radius, color=ball.color) for key, ball in balls.items()}
         for circle in circles.values():
             ax.add_patch(circle)

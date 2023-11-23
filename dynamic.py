@@ -68,8 +68,9 @@ def update_positions_bounce(pool, delta_t):
 def update_ball_with_exit(pool, ball, new_pos, new_speed):
     '''Place les boules sorties au dessus du billard.'''
     if not ball.state:
-        # ball.update_position(np.array([-10*ball.position[0],-10*ball.position[1]]))
-        ball.update_position(np.array([0.1 + 1.8 * ball.radius * ball.number, pool.board.length + 0.1]))
+        nombre_affiche = ['0','9','7','12','15','8','1','6','10','3','14','11','2','13','4','5']
+        ball.update_position(np.array([1.1 * pool.board.corners[2][0] -(ball.radius *(1 +2 * int(nombre_affiche[ball.number]))),
+                                       pool.board.corners[2][1] +0.15 * pool.board.corners[2][0] -0.1 -ball.radius]))
         if ball.number == 0:
             ball.update_position(np.array([-10,-10]))
         ball.update_speed(np.array([0, 0]))
