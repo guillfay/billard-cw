@@ -133,11 +133,11 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Simulation billard')
-        self.geometry('1200x675')
+        self.geometry('1000x820')
         self.protocol("WM_DELETE_WINDOW", self.quit_me)
 
         # Layout de la fenêtre
-        self.columnconfigure(0, weight=5)
+        self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
         # Initialisation du billard
@@ -150,7 +150,7 @@ class App(tk.Tk):
     def __create_widgets(self):
         """Création de la partie graphe
         Pour l'affichage graphique, on crée une fonction partial qui sera appelée sans paramètre dans GraphFrame"""
-        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
         self.grap_frame = GraphFrame(self, self.billard, partial_update_pool, self.queue)
         self.grap_frame.grid(column=0, row=0)
         # Création de la partie configuration
@@ -161,7 +161,7 @@ class App(tk.Tk):
         """Fonction pour recréer le billard lorsque l'utilisateur change le type de billard"""
         self.billard = billard
         self.queue = queue
-        partial_update_pool = partial(update_pool, self.billard, 1 / 60)
+        partial_update_pool = partial(update_pool, self.billard, 1 / 360)
         self.grap_frame.draw_canvas(self.billard, partial_update_pool, self.queue)
 
     def tirer(self, energie):

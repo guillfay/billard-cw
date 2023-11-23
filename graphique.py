@@ -17,7 +17,7 @@ def trace(billard, dynamic_func, queue):
     board = billard.board
     balls = billard.balls
     # Initialisation de la figure contenant l'animation
-    fig = plt.figure("Billard Interactif Techniquement Exploitable")
+    fig = plt.figure("Billard Interactif Techniquement Exploitable", figsize=(6,8))
     ax = fig.add_subplot()
     ax.set_aspect('equal')
     plt.axis("off")
@@ -58,5 +58,5 @@ def trace(billard, dynamic_func, queue):
         rectangle.set_transform(transform)
         return circles, frame_text, rectangle
 
-    ani = FuncAnimation(fig, update, interval=1000 / 60, cache_frame_data=False)
+    ani = FuncAnimation(fig, update, interval=1000 / 144, cache_frame_data=False)
     return fig, ani
