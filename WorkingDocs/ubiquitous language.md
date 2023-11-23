@@ -1,7 +1,7 @@
 ## Choix des termes utilisés au cours du projet
 
 ### Pool
-**"Pool"**, ou bien **"billard"**, désigne un objet qui va contenir un dictionnaire de boules et une board. Il peut $etr de type *français*, *anglais*, ou *américain*.
+**"Pool"**, ou bien **"billard"**, désigne un objet qui va contenir un dictionnaire de boules et une board. Il peut être de type *français*, *anglais*, ou *américain*.
 
 ### Board
 **"Board"** désigne une une table de billard. Cet objet contient une longueur et une largeur. Ce faisant, on peut déterminer des **bords** (les bandes du billard sur lesquelles rebondissent les **boules**), des **coins** qui en leurs position contiennent des **trous** dans lesquelles les balles peuvent tomber.
